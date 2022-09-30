@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { userLoginAction } from "../../actions/userActions";
-import LogoCormacarena from "../../assets/logos/eps/LogoHorizontal_mod.svg";
-import LogBackground from "../../assets/logos/Macareniaa.jpg";
+import LogoCormacarena from "../../assets/logos/LogoAQ.png";
+import LogBackground from "../../assets/logos/LoginBG.png";
+import Header from "../../components/Header";
 
 
 function LoginScreen() {
@@ -17,12 +18,16 @@ function LoginScreen() {
   };
 
   return (
-    <div
+
+    <div>
+      <Header/>
+      <div
       className="page-header align-items-start min-vh-100"
       style={{
         backgroundImage: `url(${LogBackground})`,
       }}
     >
+      
       <span className="mask bg-gradient-dark opacity-6"></span>
       <div className="container my-auto">
         <div className="row">
@@ -31,7 +36,7 @@ function LoginScreen() {
               <div className="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
                 <div className="bg-gradient-primary shadow-primary border-radius-lg py-3 pe-1">
                   <h4 className="text-white font-weight-bolder text-center mt-2 mb-0">
-                    Cormacarena
+                    A&Q
                   </h4>
                 </div>
               </div>
@@ -82,6 +87,7 @@ function LoginScreen() {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }

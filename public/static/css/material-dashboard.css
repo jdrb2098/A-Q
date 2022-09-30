@@ -2598,10 +2598,10 @@ textarea.form-control-lg {
   border-color: transparent;
 }
 .form-check-input:checked[type=checkbox] {
-  background-image: linear-gradient(195deg, #3BA9E0 0%, #55b3e1 100%);
+  background-image: linear-gradient(195deg, #FF2D7A 0%, #FFAE2D 100%);
 }
 .form-check-input:checked[type=radio] {
-  background-image: linear-gradient(195deg, #3BA9E0 0%, #55b3e1 100%);
+  background-image: linear-gradient(195deg, #FF2D7A 0%, #FFAE2D 100%);
 }
 .form-check-input[type=checkbox]:indeterminate {
   background-color: #1C2355;
@@ -17121,7 +17121,7 @@ textarea.form-control-lg {
 
 */
 .alert-primary {
-  background-image: linear-gradient(195deg, #3BA9E0 0%, #55b3e1 100%);
+  background-image: linear-gradient(195deg, #FF2D7A 0%, #FFAE2D 100%);
 }
 
 .alert-secondary {
@@ -17947,7 +17947,7 @@ textarea.form-control-lg {
   background: rgba(0, 0, 0, 0.2);
 }
 .card.card-background.card-background-mask-primary:after {
-  background-image: linear-gradient(195deg, #3BA9E0 0%, #55b3e1 100%);
+  background-image: linear-gradient(195deg, #FF2D7A 0%, #FFAE2D 100%);
   opacity: 0.85;
 }
 .card.card-background.card-background-mask-secondary:before {
@@ -18084,7 +18084,7 @@ textarea.form-control-lg {
   top: 0;
   content: "";
   border-radius: 0.5rem;
-  background-image: linear-gradient(195deg, #3BA9E0, #55b3e1);
+  background-image: linear-gradient(195deg, #FF2D7A, #FFAE2D);
   opacity: 0.85;
 }
 .rotating-card-container .card .front {
@@ -18961,7 +18961,7 @@ body.dark-version {
   width: 0.8375rem;
   height: 0.8375rem;
   border-radius: 50%;
-  background-image: linear-gradient(195deg, #3BA9E0 0%, #55b3e1 100%), var(--bs-gradient);
+  background-image: linear-gradient(195deg, #FF2D7A 0%, #FFAE2D 100%), var(--bs-gradient);
   opacity: 0;
   left: 0;
   right: 0;
@@ -19105,7 +19105,7 @@ label,
 }
 
 .bg-gradient-primary {
-  background-image: linear-gradient(195deg, #3BA9E0 0%, #55b3e1 100%);
+  background-image: linear-gradient(195deg, #FF2D7A 0%, #FFAE2D 100%);
 }
 
 .bg-gradient-secondary {
@@ -19349,10 +19349,10 @@ label,
 }
 
 svg.text-primary .color-foreground {
-  fill: #3BA9E0;
+  fill: #FF2D7A;
 }
 svg.text-primary .color-background {
-  fill: #55b3e1;
+  fill: #FFAE2D;
 }
 
 svg.text-secondary .color-foreground {
@@ -19440,7 +19440,7 @@ html {
   backdrop-filter: saturate(200%) blur(30px);
 }
 .blur-section.blur-gradient-primary {
-  background-image: linear-gradient(195deg, rgba(59, 169, 224, 0.95) 0%, rgba(85, 179, 225, 0.95) 100%);
+  background-image: linear-gradient(195deg, rgba(255, 45, 122, 0.95) 0%, rgba(255, 174, 45, 0.95) 100%);
 }
 
 *.move-on-hover {
@@ -19461,7 +19461,7 @@ html {
   transform: perspective(999px) rotateX(7deg) translate3d(0px, -4px, 5px);
 }
 *.gradient-animation {
-  background: linear-gradient(-45deg, #49a3f1, #F44335, #fb8c00, #3BA9E0, #344767);
+  background: linear-gradient(-45deg, #49a3f1, #F44335, #fb8c00, #FF2D7A, #344767);
   background-size: 400% 400% !important;
   animation: gradient 10s ease infinite;
 }
@@ -20913,8 +20913,8 @@ body:not(.dark-version) .sidenav.bg-transparent .collapse .nav-item .nav-link.ac
   color: #fff;
 }
 .nav.nav-pills.nav-pills-primary .moving-tab .nav-link.active {
-  background: #3BA9E0;
-  color: #3BA9E0;
+  background: #FF2D7A;
+  color: #FF2D7A;
 }
 .nav.nav-pills.nav-pills-info {
   background: #fff;
@@ -21015,7 +21015,7 @@ body:not(.dark-version) .sidenav.bg-transparent .collapse .nav-item .nav-link.ac
 }
 
 .pagination.pagination-primary .page-item.active > .page-link, .pagination.pagination-primary .page-item.active > .page-link:focus, .pagination.pagination-primary .page-item.active > .page-link:hover {
-  background-image: linear-gradient(195deg, #3BA9E0 0%, #55b3e1 100%);
+  background-image: linear-gradient(195deg, #FF2D7A 0%, #FFAE2D 100%);
   border: none;
 }
 .pagination.pagination-secondary .page-item.active > .page-link, .pagination.pagination-secondary .page-item.active > .page-link:focus, .pagination.pagination-secondary .page-item.active > .page-link:hover {
@@ -21906,7 +21906,7 @@ p {
   z-index: 1;
 }
 .text-gradient.text-primary {
-  background-image: linear-gradient(195deg, #3BA9E0, #55b3e1);
+  background-image: linear-gradient(195deg, #FF2D7A, #FFAE2D);
 }
 .text-gradient.text-info {
   background-image: linear-gradient(195deg, #49a3f1, #1A73E8);
@@ -23599,7 +23599,7 @@ pre[class*=language-] {
 }
 
 .bg-primary-soft {
-  background: rgba(59, 169, 224, 0.03);
+  background: rgba(255, 45, 122, 0.03);
 }
 
 .bg-info-soft {
@@ -28428,14 +28428,14 @@ Github: https://github.com/fiduswriter/Simple-DataTables
 }
 .dataTable-wrapper .dataTable-bottom .dataTable-pagination .dataTable-pagination-list .active a {
   background: transparent;
-  background-image: linear-gradient(195deg, #3BA9E0 0%, #55b3e1 100%);
+  background-image: linear-gradient(195deg, #FF2D7A 0%, #FFAE2D 100%);
   box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.09), 0 2px 3px -1px rgba(0, 0, 0, 0.07);
   color: #fff;
   border: none;
   border-radius: 50% !important;
 }
 .dataTable-wrapper .dataTable-bottom .dataTable-pagination .dataTable-pagination-list .active a:hover {
-  background-image: linear-gradient(195deg, #3BA9E0 0%, #55b3e1 100%);
+  background-image: linear-gradient(195deg, #FF2D7A 0%, #FFAE2D 100%);
 }
 .dataTable-wrapper.no-footer .dataTable-container {
   border-bottom: 0;
