@@ -1,0 +1,19 @@
+<svg width="32px" height="32px" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <title>Ecommerce copia 3</title>
+  <polygon
+    points="80 48.04 80 92.04 74 92.04 74 73.29 62.26 73.29 62.26 54.29 38.26 54.29 38.26 73.29 26 73.29 26 92.04 20 92.04 20 48.04 80 48.04"
+    fill="#e1f6fa" />
+  <polygon points="66.5 74.19 66.5 84.19 62 80.02 57.5 84.19 57.5 74.19 66.5 74.19" fill="#9ae3f0" />
+  <polygon points="54.76 55.19 54.76 65.19 50.26 61.02 45.76 65.19 45.76 55.19 54.76 55.19" fill="#9ae3f0" />
+  <polygon points="42.5 74.19 42.5 84.19 38 80.02 33.5 84.19 33.5 74.19 42.5 74.19" fill="#9ae3f0" />
+  <rect x="20" y="47.04" width="60" height="2" fill="#495771" />
+  <path
+    d="M91,93H79V35H21V93H9V35H5V25.37l0.62-.25L50,7l0.38,0.15L95,25.37V35H91V93ZM81,91h8V33h4V26.71L50,9.12,7,26.71V33h4V91h8V33H81V91Z"
+    fill="#fff" />
+  <rect x="20" y="40.04" width="60" height="2" fill="#fff" />
+  <path d="M74,93H26a1,1,0,0,1-1-1V73.29a1,1,0,0,1,1-1H74a1,1,0,0,1,1,1V92A1,1,0,0,1,74,93ZM27,91H73V74.29H27V91Z"
+    fill="#fff" />
+  <rect x="49" y="73.29" width="2" height="19.5" fill="#fff" />
+  <path d="M63.26,73.79h-2V55.29h-22v18.5h-2V54.29a1,1,0,0,1,1-1h24a1,1,0,0,1,1,1v19.5Z" fill="#fff" />
+  <rect width="100" height="100" fill="none" />
+</svg>

@@ -160,3 +160,9 @@ def getBanners(request):
     banners = Banner.objects.all()
     serializer = BannerSerializer(banners, many=True)
     return Response(serializer.data)
+
+
+def getArticulos(request):
+    articulos = articulos.objects.all()
+    serializer = ArticulosSerializer(articulos, many=True)
+    return Response(serializer.data)

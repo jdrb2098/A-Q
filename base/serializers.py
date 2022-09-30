@@ -1,8 +1,7 @@
 from dataclasses import fields
 from rest_framework import serializers
-from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import Product, Order, OrderItem, ShippingAddress, Profile, Enterprise
+from .models import Product, Order, OrderItem, ShippingAddress, Enterprise, User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -40,10 +39,6 @@ class UserSerializerWithToken(UserSerializer):
         return str(token.access_token)
 
 
-class ProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Profile
-        fields = '__all__'
 
 class EnterpriseSerializer(serializers.ModelSerializer):
     class Meta:
