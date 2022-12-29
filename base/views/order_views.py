@@ -4,14 +4,12 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 
-from base.models import Product, Order, OrderItem, ShippingAddress, User
-from base.serializers import ProductSerializer, OrderSerializer
+from base.models import Product, Solped, SolpedItem, ShippingAddress, User, CategoriasProducto
+from base.serializers import ProductSerializer, SolpedSerializer
 
 from rest_framework import status
 from datetime import datetime
 
-import hashlib
-from backend.settings import PAYU_API_KEY, PAYU_MERCHANTID
 
 from django.core.mail import EmailMessage
 from django.conf import settings
@@ -33,7 +31,7 @@ def addOrderItems(request):
 
         # (1) Create order
 
-        order = Order.objects.create(
+        order = Solped.objects.create(
             user=user,
             paymentMethod=data['paymentMethod'],
             taxPrice=data['taxPrice'],
@@ -57,7 +55,7 @@ def addOrderItems(request):
         for i in orderItems:
             product = Product.objects.get(_id=i['product'])
 
-            item = OrderItem.objects.create(
+            item = SolpedItem.objects.create(
                 product=product,
                 order=order,
                 name=product.name,
@@ -92,7 +90,7 @@ def addOrderItems(request):
         email.fail_silently= False
         email.send()    
 
-        serializer = OrderSerializer(order, many=False)
+        serializer = SolpedSerializer(order, many=False)
         return Response(serializer.data)
 
 
@@ -101,15 +99,15 @@ def addOrderItems(request):
 def getMyOrders(request):
     user = request.user
     orders = user.order_set.all()
-    serializer = OrderSerializer(orders, many=True)
+    serializer = SolpedSerializer(orders, many=True)
     return Response(serializer.data)
 
 
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def getOrders(request):
-    orders = Order.objects.all()
-    serializer = OrderSerializer(orders, many=True)
+    orders = Solped.objects.all()
+    serializer = SolpedSerializer(orders, many=True)
     return Response(serializer.data)
 
 
@@ -120,17 +118,12 @@ def getOrderById(request, pk):
     user = request.user
 
     try:
-        order = Order.objects.get(_id=pk)
+        order = Solped.objects.get(_id=pk)
         splitTotalPrice = str(order.totalPrice).split(".")
         intTotalPrice = splitTotalPrice[0]
-    
-        signature = PAYU_API_KEY + '~' + PAYU_MERCHANTID + '~' + 'Kattalei' + str(order._id) + '~' + intTotalPrice + '~COP'
-        signatureUtf8 = signature.encode("utf-8")
-
-        hash = hashlib.md5(signatureUtf8)
         order.hash = hash.hexdigest()
         if user.is_staff or order.user == user:
-            serializer = OrderSerializer(order, many=False)
+            serializer = SolpedSerializer(order, many=False)
             return Response(serializer.data)
         else:
             Response({'detail': 'Not authorized to view this order'},
@@ -151,7 +144,7 @@ def updateOrderToPaid(request, pk):
     )
     email.fail_silently= False
     email.send()
-    order = Order.objects.get(_id=pk)
+    order = Solped.objects.get(_id=pk)
 
     order.isPaid = True
     order.paidAt = datetime.now()
@@ -163,10 +156,30 @@ def updateOrderToPaid(request, pk):
 @api_view(['PUT'])
 @permission_classes([IsAdminUser])
 def updateOrderToDelivered(request, pk):
-    order = Order.objects.get(_id=pk)
+    order = Solped.objects.get(_id=pk)
 
     order.isDelivered = True
     order.deliveredAt = datetime.now()
     order.save()
 
     return Response('Order was delivered')
+
+
+@api_view(['GET'])
+def buscar_solpeds_por_categorias(request):
+    data = request.data
+    categorias_productos= CategoriasProducto.objects.filter(id_categoria__in= data['categorias'])
+    categorias_productos_list=[]
+    for i in categorias_productos:
+        categorias_productos_list.append(i.id_producto)
+    
+    solped_items = SolpedItem.objects.filter(product__in=categorias_productos_list)
+    solped_items_list = []
+    
+    for i in solped_items:
+        solped_items_list.append(i.solped._id)
+    solped = Solped.objects.filter(_id__in=solped_items_list)
+    print(solped)
+    serializer = SolpedSerializer(solped,many=True)
+
+    return Response({'Success':True,'solpeds':serializer.data}, status=status.HTTP_200_OK)

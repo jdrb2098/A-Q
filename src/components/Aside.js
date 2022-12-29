@@ -64,7 +64,7 @@ const Aside = () => {
             </div>
 
             <span className="ms-1 font-weight-bold text-white">
-              Bia - Cormacarena
+              A&Q - Ingenieria
             </span>
           </Link>
         </div>
@@ -124,84 +124,12 @@ const Aside = () => {
                   <li className="nav-item ">
                     <Link
                       className="nav-link text-white "
-                      to="recaudo/facturacion"
+                      to="dashboard"
                     >
-                      <span className="sidenav-mini-icon"> F </span>
+                      <span className="sidenav-mini-icon"> C   </span>
                       <span className="sidenav-normal  ms-2  ps-1">
                         {" "}
-                        Facturación{" "}
-                      </span>
-                    </Link>
-                  </li>
-                  <li className="nav-item ">
-                    <Link
-                      className="nav-link text-white "
-                      to="recaudo/pagosenlinea"
-                    >
-                      <span className="sidenav-mini-icon"> P </span>
-                      <span className="sidenav-normal  ms-2  ps-1">
-                        {" "}
-                        Pagos en linea{" "}
-                      </span>
-                    </Link>
-                  </li>
-                  <li className="nav-item ">
-                    <Link
-                      className="nav-link text-white "
-                      to="recaudo/gestordeudores"
-                    >
-                      <span className="sidenav-mini-icon"> G </span>
-                      <span className="sidenav-normal  ms-2  ps-1">
-                        {" "}
-                        Gestor deudores{" "}
-                      </span>
-                    </Link>
-                  </li>
-                  <li className="nav-item ">
-                    <Link
-                      className="nav-link text-white "
-                      to="recaudo/facilidadesdepago"
-                    >
-                      <span className="sidenav-mini-icon"> F </span>
-                      <span className="sidenav-normal  ms-2  ps-1">
-                        {" "}
-                        Facilidades de pago{" "}
-                      </span>
-                    </Link>
-                  </li>
-                  <li className="nav-item ">
-                    <Link
-                      className="nav-link text-white "
-                      to="recaudo/cobropersuasivo"
-                    >
-                      <span className="sidenav-mini-icon"> C </span>
-                      <span className="sidenav-normal  ms-2  ps-1">
-                        {" "}
-                        Cobro persuasivo{" "}
-                      </span>
-                    </Link>
-                  </li>
-                  <li className="nav-item ">
-                    <Link
-                      className="nav-link text-white "
-                      to="recaudo/cobrocoactivo"
-                    >
-                      <span className="sidenav-mini-icon"> C </span>
-                      <span className="sidenav-normal  ms-2  ps-1">
-                        {" "}
-                        Cobro coactivo{" "}
-                      </span>
-                    </Link>
-                  </li>
-                  <li className="nav-item ">
-                    <Link
-                      className="nav-link text-white "
-                      to="recaudo/portalreportes"
-                    >
-                      <span className="sidenav-mini-icon"> P </span>
-                      <span className="sidenav-normal  ms-2  ps-1">
-                        {" "}
-                        Portal reportes{" "}
+                        Charts{" "}
                       </span>
                     </Link>
                   </li>
@@ -282,10 +210,10 @@ const Aside = () => {
                       className="nav-link text-white "
                       href="../../pages/applications/crm.html"
                     >
-                      <span className="sidenav-mini-icon"> C </span>
+                      <span className="sidenav-mini-icon"> A </span>
                       <span className="sidenav-normal  ms-2  ps-1">
                         {" "}
-                        Creacion PAI{" "}
+                        Analytics{" "}
                       </span>
                     </a>
                   </li>
@@ -294,49 +222,14 @@ const Aside = () => {
                       className="nav-link text-white "
                       href="../../pages/applications/kanban.html"
                     >
-                      <span className="sidenav-mini-icon"> S </span>
+                      <span className="sidenav-mini-icon"> H </span>
                       <span className="sidenav-normal  ms-2  ps-1">
                         {" "}
-                        Seguimiento PAI{" "}
+                        Historial{" "}
                       </span>
                     </a>
                   </li>
-                  <li className="nav-item ">
-                    <a
-                      className="nav-link text-white "
-                      href="../../pages/applications/wizard.html"
-                    >
-                      <span className="sidenav-mini-icon"> C </span>
-                      <span className="sidenav-normal  ms-2  ps-1">
-                        {" "}
-                        Creacion POAI{" "}
-                      </span>
-                    </a>
-                  </li>
-                  <li className="nav-item ">
-                    <a
-                      className="nav-link text-white "
-                      href="../../pages/applications/datatables.html"
-                    >
-                      <span className="sidenav-mini-icon"> C </span>
-                      <span className="sidenav-normal  ms-2  ps-1">
-                        {" "}
-                        Creacion PAA{" "}
-                      </span>
-                    </a>
-                  </li>
-                  <li className="nav-item ">
-                    <a
-                      className="nav-link text-white "
-                      href="../../pages/applications/calendar.html"
-                    >
-                      <span className="sidenav-mini-icon"> C </span>
-                      <span className="sidenav-normal  ms-2  ps-1">
-                        {" "}
-                        Consulta de Historicos{" "}
-                      </span>
-                    </a>
-                  </li>
+                  
                 </ul>
               </div>
             </li>

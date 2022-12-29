@@ -128,8 +128,13 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('AQ_DB_NAME'),
+        'USER': os.environ.get('AQ_DB_USER'),
+        'PASSWORD': os.environ.get('AQ_DB_PASSWORD'),
+        'HOST': os.environ.get('AQ_DB_HOST'),
+        'PORT': os.environ.get('AQ_DB_PORT'),
+        'ATOMIC_REQUESTS': True
     }
 }
 
@@ -173,8 +178,7 @@ MEDIA_URL = '/images/'
 
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'build/static'),
-    BASE_DIR, 'static', 
+    os.path.join(BASE_DIR, 'build/static'), 
 ]
 
 MEDIA_ROOT = BASE_DIR / 'static/images'

@@ -468,9 +468,10 @@ $aspect-ratios: (
 // Font, line-height, and color for body text, headings, and more.
 
 // stylelint-disable value-keyword-case
-$font-family-sans-serif:      'Roboto', Helvetica, Arial, sans-serif !default;
+$font-family-sans-serif:      'Montserrat', 'Josefin Sans','Roboto', Helvetica, Arial, sans-serif !default;
 $font-family-monospace:       SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;
-$font-family-roboto-slab:     'Roboto Slab', sans-serif !default;
+$font-family-montserrat:      'Montserrat',  !default;
+$font-family-Josefin-sans:    'Josefin Sans', !default;
 
 // stylelint-enable value-keyword-case
 $font-family-base:            var(--bs-font-sans-serif) !default;

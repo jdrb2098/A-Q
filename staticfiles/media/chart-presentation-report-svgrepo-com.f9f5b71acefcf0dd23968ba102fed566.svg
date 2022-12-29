@@ -1,0 +1,25 @@
+<?xml version="1.0" ?><svg width="15" height="15" viewBox="-4 0 60 60" id="presentation"
+  xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #b5997a;
+      }
+
+      .cls-1,
+      .cls-2 {
+        fill-rule: evenodd;
+      }
+
+      .cls-2 {
+        fill: #65727f;
+      }
+    </style>
+  </defs>
+  <path class="cls-1"
+    d="M494,334a4,4,0,0,1,4-4h44a4,4,0,0,1,4,4v30H494V334Zm6.849,21.12a3,3,0,0,0,4.242,0l5.879-5.885,7.878,7.887a3,3,0,0,0,4.242,0l15.973-16a3,3,0,0,0-4.242-4.247l-13.852,13.872-7.879-7.886a2.994,2.994,0,0,0-4.241,0l-8,8.008A3,3,0,0,0,500.849,355.12Z"
+    data-name="presentation" id="presentation-2" transform="translate(-494 -330)" />
+  <path class="cls-2"
+    d="M542,374h-4l3.459,13.566A2,2,0,0,1,539.506,390h-0.331a2.005,2.005,0,0,1-1.747-1.028L528,374h-4l-1.8,14.221A2,2,0,0,1,520.211,390h-0.422a2,2,0,0,1-1.986-1.778L516,374h-4l-9.428,14.972A2.005,2.005,0,0,1,500.824,390h-0.33a2,2,0,0,1-1.953-2.434L502,374h-4a4,4,0,0,1-4-4v-2h52v2A4,4,0,0,1,542,374Z"
+    data-name="presentation copy" id="presentation_copy" transform="translate(-494 -330)" />
+</svg>

@@ -60,6 +60,7 @@ h6, .h6 {
 }
 
 p, .p {
+  font-family: $font-family-Josefin-sans;
   font-size: $font-size-base;
   font-weight: $p-font-weight;
   line-height: $p-line-height;
@@ -75,7 +76,7 @@ h1, .h1,
 h2, .h2,
 h3, .h3 {
   font-weight: $font-weight-bold;
-  font-family: $font-family-roboto-slab;
+  font-family: $font-family-montserrat;
 }
 
 h4, .h4,

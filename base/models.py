@@ -54,6 +54,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
+class Categoria(models.Model):
+    id_categoria = models.AutoField(primary_key=True,editable=False)
+    nombre = models.CharField(max_length=255)
+    def __str__(self):
+        return self.nombre
+
 
 class Product(models.Model):
     owner = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
@@ -61,7 +67,7 @@ class Product(models.Model):
     image = models.ImageField(null=True, blank=True,
                               default='/placeholder.png')
     brand = models.CharField(max_length=200, null=True, blank=True)
-    category = models.CharField(max_length=200, null=True, blank=True)
+    categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     price = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
     countInStock = models.IntegerField(null=True, blank=True, default=0)
@@ -77,8 +83,8 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-class Order(models.Model):
-    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+class Solped(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     paymentMethod = models.CharField(max_length=200, null=True, blank=True)
     taxPrice = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
     shippingPrice = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
@@ -97,9 +103,9 @@ class Order(models.Model):
         return str(self.createdAt)
 
 
-class OrderItem(models.Model):
+class SolpedItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
-    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
+    solped = models.ForeignKey(Solped, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=200, null=True, blank=True)
     qty = models.IntegerField(null=True, blank=True, default=0)
     price = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
@@ -111,8 +117,8 @@ class OrderItem(models.Model):
 
 
 class ShippingAddress(models.Model):
-    order = models.OneToOneField(
-        Order, on_delete=models.CASCADE, null=True, blank=True)
+    solped = models.OneToOneField(
+        Solped, on_delete=models.CASCADE, null=True, blank=True)
     address = models.CharField(max_length=200, null=True, blank=True)
     city = models.CharField(max_length=200, null=True, blank=True)
     postalCode = models.CharField(max_length=200, null=True, blank=True)
@@ -128,7 +134,7 @@ class ShippingAddress(models.Model):
 
 class Oferta(models.Model):
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    solped = models.OneToOneField(Order, on_delete=models.CASCADE, null=True)
+    solped = models.OneToOneField(Solped, on_delete=models.CASCADE, null=True)
     taxPrice = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
     shippingPrice = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
     totalPrice = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
@@ -141,4 +147,12 @@ class Oferta(models.Model):
         return str(self.createdAt)
 
 
+class CategoriasProducto(models.Model):
+    id_categorias_producto = models.AutoField(primary_key=True,editable=False)
+    id_categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
+    id_producto = models.ForeignKey(Product, on_delete=models.CASCADE)
 
+class SubCategoria(models.Model):
+    id_subcategoria = models.AutoField(primary_key=True,editable=False)
+    nombre = models.CharField(max_length=255)
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)

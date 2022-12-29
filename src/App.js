@@ -14,6 +14,7 @@ import TramitesYServiciosRoutes from "./screens/tramitesYServicios/routes/Tramit
 import ProtectedRoutes from "./components/ProtectedRoutes";
 
 import { getDataFromLocalStorage } from "./actions/userActions";
+import PrincipalScreen from "./screens/PrincipalScreen";
 
 function App() {
   const dispatch = useDispatch();
@@ -24,9 +25,11 @@ function App() {
   
   return (
     <Routes>
-      <Route element={<ProtectedRoutes redirectTo={"/login"} />}>
+      <Route element={<ProtectedRoutes redirectTo={"/login"}/>}>
         <Route path="/dashboard" element={<HomeScreen />}>
+
           <Route index element={<LogoScreen />} />
+          
 
           <Route path="almacen/*" element={<AlmacenRoutes />} />
 
@@ -44,13 +47,11 @@ function App() {
             element={<TramitesYServiciosRoutes />}
           />
         </Route>
-
+        <Route path="/home" element={<PrincipalScreen/>}/>
         <Route path="/*" element={<Navigate to="/dashboard" />} />
       </Route>
 
-      <Route
-        element={<ProtectedRoutes negate={true} redirectTo={"/dashboard"} />}
-      >
+      <Route element={<ProtectedRoutes negate={true} redirectTo={"/dashboard"} />}>
         <Route path="/login" element={<LoginScreen />} />
       </Route>
     </Routes>
