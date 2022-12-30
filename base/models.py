@@ -22,18 +22,8 @@ class Enterprise(models.Model):
         return self.name
 
 class User(AbstractBaseUser, PermissionsMixin):
-    class Role(models.TextChoices):
-        ADMIN = "ADMIN", "Admin"
-        SUPPLIER = "SUPPLIER", "Supplier"
-        USUARIO = "USUARIO", "AppUserLv1"
-        USUARIOAUTH = "USUARIOAUTH", "AppUserLv2"
-        COMPRADORNEGOCIADOR = "COMPRADORNEGOCIADOR", "AppUserLv3"
-        
-
-    base_role = Role.ADMIN
-    role = models.CharField(max_length=50, choices=Role.choices)
     enterprise = models.OneToOneField(Enterprise, on_delete=models.SET_NULL, null=True)
-    email = models.EmailField(_('email address'), unique=True)
+    email = models.EmailField(unique=True, db_column='TzemailUsuario')
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -47,10 +37,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     
     objects = CustomUserManager()
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.role = self.base_role
-            return super().save(*args, **kwargs)
     def __str__(self):
         return self.email
 
