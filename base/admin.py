@@ -10,9 +10,7 @@ from .models import *
 
 
 
-admin.site.register(User)
-    
-  
+admin.site.register(User)  
 admin.site.register(Enterprise)
 admin.site.register(Product)
 admin.site.register(Solped)

@@ -134,7 +134,6 @@ DATABASES = {
         'PASSWORD': os.environ.get('AQ_DB_PASSWORD'),
         'HOST': os.environ.get('AQ_DB_HOST'),
         'PORT': os.environ.get('AQ_DB_PORT'),
-        'ATOMIC_REQUESTS': True
     }
 }
 
