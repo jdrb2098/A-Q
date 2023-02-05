@@ -111,8 +111,8 @@ class Product(models.Model):
     createdAt = models.DateTimeField(auto_now_add=True)
     referenceCode=models.CharField(max_length=200, null=True, blank=True)
     cantidad = models.IntegerField(null=True, blank=True, default=0)
-    unidadDeMedida = models.ForeignKey(UnidadesMedida)
-    valor_unitario = models.DecimalField()
+    unidadDeMedida = models.ForeignKey(UnidadesMedida, on_delete=models.SET_NULL, blank=True, null=True)
+    valor_unitario = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
     is_bien = models.BooleanField(default=False)
     is_service = models.BooleanField(default=False)
     _id = models.AutoField(primary_key=True, editable=False)
@@ -125,13 +125,13 @@ class Product(models.Model):
 class CentroCostos(models.Model):
     nombre = models.CharField(max_length=250)
     empresa = models.ForeignKey(Enterprise, on_delete=models.CASCADE)
-    presupuesto = models.DecimalField() #presupuesto fijo mensual
+    presupuesto = models.DecimalField(max_digits=11, decimal_places=2, null=True, blank=True) 
     autorizador_solicitudes = models.ForeignKey(User, on_delete=models.CASCADE)
 class Solped(models.Model):
-    usuario_creador = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    usuario_creador = models.ForeignKey(User, on_delete=models.CASCADE, related_name='creador')
     descripcion = models.TextField()
     centro_de_costos = models.ForeignKey(CentroCostos, on_delete=models.CASCADE) 
-    negociador_asignado = models.ForeignKey(User, on_delete=models.CASCADE)
+    negociador_asignado = models.ForeignKey(User, on_delete=models.SET_NULL,null=True, blank=True, related_name='negociador')
     bodega = models.ForeignKey(Bodegas, on_delete=models.CASCADE)
     fecha_limite_resolucion = models.DateField()
     totalPrice = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
@@ -148,13 +148,13 @@ class Solped(models.Model):
         return str(self.createdAt)
 
 class ObservacionesSolped(models.Model):
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True,blank=True)
     fecha_de_creacion = models.DateTimeField(auto_now_add=True)
     Observacion = models.TextField()
-    solped = models.ForeignKey(Solped, on_delete=models.CASCADE)
+    solped = models.ForeignKey(Solped, on_delete=models.CASCADE,  null=True,blank=True)
 class SolpedItem(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
-    solped = models.ForeignKey(Solped, on_delete=models.SET_NULL, null=True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True,blank=True)
+    solped = models.ForeignKey(Solped, on_delete=models.SET_NULL, null=True,blank=True)
     name = models.CharField(max_length=200, null=True, blank=True)
     qty = models.IntegerField(null=True, blank=True, default=0)
     price = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
@@ -167,7 +167,7 @@ class SolpedItem(models.Model):
 
 class ShippingAddress(models.Model):
     solped = models.OneToOneField(
-        Solped, on_delete=models.CASCADE, null=True, blank=True)
+        Solped, on_delete=models.CASCADE)
     address = models.CharField(max_length=200, null=True, blank=True)
     city = models.CharField(max_length=200, null=True, blank=True)
     postalCode = models.CharField(max_length=200, null=True, blank=True)
@@ -211,8 +211,8 @@ class HistoricoDeCompra(models.Model):
     nombre_material = models.CharField(max_length=255)
     codigo_material = models.CharField(max_length=50)
     proveedor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    precio_unitario = models.DecimalField()
-    precio_total = models.DecimalField()
+    precio_unitario = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
+    precio_total = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
 
 class Evento_Proveedores(models.Model):
      titulo_evento = models.CharField(max_length=255)
@@ -228,5 +228,5 @@ class Evento_Proveedores(models.Model):
 
     
 class EventoPrivado(models.Model):
-    evento = models.ForeignKey(Evento_Proveedores, on_delete=models.SET_NULL)
-    preveedor = models .ForeignKey(User, on_delete=models.SET_NULL)
+    evento = models.ForeignKey(Evento_Proveedores, on_delete=models.SET_NULL, null=True,blank=True)
+    preveedor = models .ForeignKey(User, on_delete=models.SET_NULL, null=True,blank=True)
