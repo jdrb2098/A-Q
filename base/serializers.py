@@ -93,10 +93,13 @@ class SolpedSerializer(serializers.ModelSerializer):
         serializer = UserSerializer(user, many=False)
         return serializer.data
 
+
 class CategoriaSerializer(serializers.ModelSerializer):
     class Meta:
         model=Categoria
         fields = '__all__'
+
+
 class SubCategoriaSerializer(serializers.ModelSerializer):
     class Meta:
         model=SubCategoria

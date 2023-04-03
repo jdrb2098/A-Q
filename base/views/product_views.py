@@ -7,9 +7,23 @@ from rest_framework.response import Response
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from base.models import Banner, Product, Review
-from base.serializers import ProductSerializer, BannerSerializer
-
+from base.serializers import ProductSerializer, BannerSerializer, CategoriaSerializer
+from base.models.base_models import Categoria, SubCategoria
 from rest_framework import status
+
+# Ejemplo de categorias
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
+def createCategories(request):
+    user = request.user
+    data = request.data
+    category = Categoria.objects.create(
+        user=user,
+        nombre=data['nombre'],
+        id_categoria=data['id_categoria']
+    )
+    serializer = CategoriaSerializer(category, many=False)
+    return Response(serializer.data)
 
 
 @api_view(['GET'])
@@ -60,9 +74,10 @@ def getProduct(request, pk):
 @permission_classes([IsAdminUser])
 def createProduct(request):
     user = request.user
-
+    id_categoria = request.data['id_categoria']
     product = Product.objects.create(
         user=user,
+        id_producto=f'{id_categoria}{id_subcategoria}{codigoproducto}',
         name='Sample Name',
         price=0,
         brand='Sample Brand',
