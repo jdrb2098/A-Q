@@ -8,6 +8,7 @@ from django.utils import timezone
 import uuid
 
 from ..managers import CustomUserManager
+from .base_models import Enterprise
 
 
 class User(AbstractBaseUser, PermissionsMixin):
