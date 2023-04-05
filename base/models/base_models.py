@@ -23,9 +23,6 @@ class Enterprise(models.Model):
         return self.name
 
 
-
-
-
 class Categoria(models.Model):
     id_categoria = models.CharField(max_length=11, primary_key=True, editable=False)
     nombre = models.CharField(max_length=255)
@@ -74,7 +71,7 @@ class Product(models.Model):
 
 
 class SubCategoria(models.Model):
-    id_sub_categoria = models.CharField(max_length=11, primary_key=True, editable=False, default='0')
+    id_sub_categoria = models.CharField(max_length=11, primary_key=True, editable=False)
     nombre = models.CharField(max_length=255)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
 

@@ -2,23 +2,21 @@ from unicodedata import category
 from django.shortcuts import render
 from django.db.models import Q
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.response import Response
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-from base.models import *
 from base.serializers import ProductSerializer, CategoriaSerializer, SubCategoriaSerializer
 from rest_framework import status
 from base.models import *
 
-# Ejemplo de categorias
 @api_view(['POST'])
-#@permission_classes([IsAdminUser])
+@permission_classes([])
 def create_categories(request):
-    user = request.user
+    #user = request.user
     data = request.data
     category = Categoria.objects.create(
-        user=user,
+        #user=user,
         nombre=data['nombre'],
         id_categoria=data['id_categoria']
     )
@@ -27,7 +25,7 @@ def create_categories(request):
 
 
 @api_view(['GET'])
-#@permission_classes([IsAdminUser])
+@permission_classes([])
 def get_categories(request):
     categories = Categoria.objects.all()
     serializer = CategoriaSerializer(categories, many=True)
@@ -35,6 +33,7 @@ def get_categories(request):
 
 
 @api_view(['GET'])
+@permission_classes([])
 def get_category(request, pk):
     try:
         category = Categoria.objects.get(pk=pk)
@@ -45,7 +44,7 @@ def get_category(request, pk):
 
 
 @api_view(['PUT'])
-#@permission_classes([IsAdminUser])
+@permission_classes([])
 def update_category(request, pk):
     try:
         category = Categoria.objects.get(pk=pk)
@@ -60,7 +59,7 @@ def update_category(request, pk):
 
 
 @api_view(['DELETE'])
-#@permission_classes([IsAdminUser])
+@permission_classes([])
 def delete_category(request, pk):
     try:
         category = Categoria.objects.get(pk=pk)
@@ -68,6 +67,90 @@ def delete_category(request, pk):
         return Response({'message': 'Categoria eliminada correctamente'})
     except Categoria.DoesNotExist:
         return Response({'error': 'Categoria no encontrada'}, status=404)
+
+
+""" SubCategoria """
+
+
+# Vista para crear una nueva subcategoría
+@api_view(['POST'])
+@permission_classes([])
+def create_subcategory(request):
+    data = request.data
+    sub_category = SubCategoria.objects.create(
+        nombre=data['nombre'],
+        id_sub_categoria=data['id_sub_categoria'],
+        categoria=Categoria.objects.get(id_categoria=data['categoria'])
+    )
+    serializer = SubCategoriaSerializer(sub_category, many=False)
+    return Response(serializer.data)
+
+
+# Vista para leer todas las subcategorías
+@api_view(['GET'])
+@permission_classes([])
+def get_subcategories(request):
+    subcategorias = SubCategoria.objects.all()
+    serializer = SubCategoriaSerializer(subcategorias, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+# Vista para leer una subcategoría específica por clave primaria (pk)
+@api_view(['GET'])
+@permission_classes([])
+def get_subcategory(request, pk):
+    try:
+        subcategoria = SubCategoria.objects.get(pk=pk)
+    except SubCategoria.DoesNotExist:
+        return Response({"message": "Subcategoría no encontrada"}, status=404)
+
+    serializer = SubCategoriaSerializer(subcategoria)
+    return Response(serializer.data)
+
+
+# Vista para actualizar una subcategoría existente
+@api_view(['PUT'])
+@permission_classes([])
+def update_subcategory(request, pk):
+    try:
+        subcategoria = SubCategoria.objects.get(id_sub_categoria=pk)
+    except SubCategoria.DoesNotExist:
+        return Response({'error': 'La subcategoría no existe'}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = SubCategoriaSerializer(subcategoria, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# Vista para eliminar una subcategoría existente
+@api_view(['DELETE'])
+@permission_classes([])
+def delete_subcategory(request, pk):
+    try:
+        subcategoria = SubCategoria.objects.get(id_sub_categoria=pk)
+    except SubCategoria.DoesNotExist:
+        return Response({'error': 'La subcategoría no existe'}, status=status.HTTP_404_NOT_FOUND)
+
+    subcategoria.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# Vista para leer todas las subcategorías, con filtro por categoría
+@api_view(['GET'])
+@permission_classes([])
+def filter_subcategories(request, pk):
+    try:
+        subcategorias = SubCategoria.objects.filter(categoria=pk)
+    except SubCategoria.DoesNotExist:
+        return Response({"message": "No se encontraron subcategorías para la categoría especificada"}, status=404)
+
+    serializer = SubCategoriaSerializer(subcategorias, many=True)
+    return Response(serializer.data)
+
+
+""" Productos """
 
 
 @api_view(['GET'])
