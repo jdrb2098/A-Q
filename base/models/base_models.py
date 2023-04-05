@@ -12,17 +12,6 @@ magnitudes_CHOICES = (
 )
 
 
-class Enterprise(models.Model):
-    name = models.CharField(max_length=200, null=True, blank=True)
-    image = models.ImageField(null=True, blank=True, default='/placeholder.png')
-    description = models.TextField(null=True, blank=True)
-    createdAt = models.DateTimeField(auto_now_add=True)
-    _id = models.AutoField(primary_key=True, editable=False)
-
-    def __str__(self):
-        return self.name
-
-
 class Categoria(models.Model):
     id_categoria = models.CharField(max_length=11, primary_key=True, editable=False)
     nombre = models.CharField(max_length=255)
@@ -51,8 +40,7 @@ class UnidadesMedida(models.Model):
 
 class Product(models.Model):
     name = models.CharField(max_length=200, null=True, blank=True)
-    image = models.ImageField(null=True, blank=True,
-                              default='/placeholder.png')
+    image = models.ImageField(null=True, blank=True, default='/placeholder.png')
     brand = models.CharField(max_length=200, null=True, blank=True)
     categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True)
     description = models.TextField(null=True, blank=True)

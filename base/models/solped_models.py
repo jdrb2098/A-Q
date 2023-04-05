@@ -36,7 +36,7 @@ class Solped(models.Model):
     fachaDeAtorizacion = models.DateTimeField(auto_now_add=False, null=True, blank=True)
     nivel_prioridad = models.TextField(choices=nivel_prioridad_CHOICES)
     is_cancelada = models.BooleanField(default=False)
-    documento = models.FileField(blank=True ,null=True)
+    documento = models.FileField(blank=True, null=True)
     _id = models.AutoField(primary_key=True, editable=False)
 
 
