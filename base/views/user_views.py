@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from base.models.seguridad_models import User
 
 from base.serializers import UserSerializer, UserSerializerWithToken
-# Create your views here.
+
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 

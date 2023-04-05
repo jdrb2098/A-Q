@@ -6,15 +6,15 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-from base.models import Banner, Product, Review
-from base.serializers import ProductSerializer, BannerSerializer, CategoriaSerializer
-from base.models.base_models import Categoria, SubCategoria
+from base.models import *
+from base.serializers import ProductSerializer, CategoriaSerializer, SubCategoriaSerializer
 from rest_framework import status
+from base.models import *
 
 # Ejemplo de categorias
 @api_view(['POST'])
-@permission_classes([IsAdminUser])
-def createCategories(request):
+#@permission_classes([IsAdminUser])
+def create_categories(request):
     user = request.user
     data = request.data
     category = Categoria.objects.create(
@@ -27,7 +27,51 @@ def createCategories(request):
 
 
 @api_view(['GET'])
-def getProducts(request):
+#@permission_classes([IsAdminUser])
+def get_categories(request):
+    categories = Categoria.objects.all()
+    serializer = CategoriaSerializer(categories, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def get_category(request, pk):
+    try:
+        category = Categoria.objects.get(pk=pk)
+        serializer = CategoriaSerializer(category, many=False)
+        return Response(serializer.data)
+    except Categoria.DoesNotExist:
+        return Response({'error': 'Categoria no encontrada'}, status=404)
+
+
+@api_view(['PUT'])
+#@permission_classes([IsAdminUser])
+def update_category(request, pk):
+    try:
+        category = Categoria.objects.get(pk=pk)
+        data = request.data
+        category.nombre = data['nombre']
+        category.id_categoria = data['id_categoria']
+        category.save()
+        serializer = CategoriaSerializer(category, many=False)
+        return Response(serializer.data)
+    except Categoria.DoesNotExist:
+        return Response({'error': 'Categoria no encontrada'}, status=404)
+
+
+@api_view(['DELETE'])
+#@permission_classes([IsAdminUser])
+def delete_category(request, pk):
+    try:
+        category = Categoria.objects.get(pk=pk)
+        category.delete()
+        return Response({'message': 'Categoria eliminada correctamente'})
+    except Categoria.DoesNotExist:
+        return Response({'error': 'Categoria no encontrada'}, status=404)
+
+
+@api_view(['GET'])
+def get_products(request):
     query = request.query_params.get('keyword')
     if query == None:
         query = ''
@@ -35,7 +79,6 @@ def getProducts(request):
     products = Product.objects.distinct().filter(
         Q(category__icontains=query) |
         Q(name__icontains=query)).order_by('-createdAt')
-       
 
     page = request.query_params.get('page')
     paginator = Paginator(products, 8)
@@ -47,7 +90,7 @@ def getProducts(request):
     except EmptyPage:
         products = paginator.page(paginator.num_pages)
 
-    if page == None:
+    if page is None:
         page = 1
 
     page = int(page)
@@ -57,14 +100,14 @@ def getProducts(request):
 
 
 @api_view(['GET'])
-def getTopProducts(request):
+def get_top_products(request):
     products = Product.objects.filter(rating__gte=4).order_by('-rating')[0:5]
     serializer = ProductSerializer(products, many=True)
     return Response(serializer.data)
 
 
 @api_view(['GET'])
-def getProduct(request, pk):
+def get_product(request, pk):
     product = Product.objects.get(_id=pk)
     serializer = ProductSerializer(product, many=False)
     return Response(serializer.data)
@@ -72,12 +115,12 @@ def getProduct(request, pk):
 
 @api_view(['POST'])
 @permission_classes([IsAdminUser])
-def createProduct(request):
+def create_product(request):
     user = request.user
     id_categoria = request.data['id_categoria']
     product = Product.objects.create(
         user=user,
-        id_producto=f'{id_categoria}{id_subcategoria}{codigoproducto}',
+        #id_producto=f'{id_categoria}{id_subcategoria}{codigoproducto}',
         name='Sample Name',
         price=0,
         brand='Sample Brand',
@@ -92,7 +135,7 @@ def createProduct(request):
 
 @api_view(['PUT'])
 @permission_classes([IsAdminUser])
-def updateProduct(request, pk):
+def update_product(request, pk):
     data = request.data
     product = Product.objects.get(_id=pk)
 
@@ -111,14 +154,14 @@ def updateProduct(request, pk):
 
 @api_view(['DELETE'])
 @permission_classes([IsAdminUser])
-def deleteProduct(request, pk):
+def delete_product(request, pk):
     product = Product.objects.get(_id=pk)
     product.delete()
     return Response('Producted Deleted')
 
 
 @api_view(['POST'])
-def uploadImage(request):
+def upload_image(request):
     data = request.data
 
     product_id = data['product_id']
@@ -132,7 +175,7 @@ def uploadImage(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def createProductReview(request, pk):
+def create_product_review(request, pk):
     user = request.user
     product = Product.objects.get(_id=pk)
     data = request.data
@@ -170,14 +213,15 @@ def createProductReview(request, pk):
 
         return Response('Review Added')
 
-@api_view(['GET'])
-def getBanners(request):
-    banners = Banner.objects.all()
-    serializer = BannerSerializer(banners, many=True)
-    return Response(serializer.data)
+
+#@api_view(['GET'])
+#def get_banners(request):
+    #banners = Banner.objects.all()
+    #serializer = BannerSerializer(banners, many=True)
+    #return Response(serializer.data)
 
 
-def getArticulos(request):
-    articulos = articulos.objects.all()
-    serializer = ArticulosSerializer(articulos, many=True)
-    return Response(serializer.data)
+#def get_articulos(request):
+    #articulos = articulos.objects.all()
+    #serializer = ArticulosSerializer(articulos, many=True)
+    #return Response(serializer.data)
