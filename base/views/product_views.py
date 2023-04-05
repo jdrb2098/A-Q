@@ -154,6 +154,7 @@ def filter_subcategories(request, pk):
 
 
 @api_view(['GET'])
+@permission_classes([])
 def get_products(request):
     query = request.query_params.get('keyword')
     if query == None:
@@ -183,6 +184,7 @@ def get_products(request):
 
 
 @api_view(['GET'])
+@permission_classes([])
 def get_top_products(request):
     products = Product.objects.filter(rating__gte=4).order_by('-rating')[0:5]
     serializer = ProductSerializer(products, many=True)
@@ -190,6 +192,7 @@ def get_top_products(request):
 
 
 @api_view(['GET'])
+@permission_classes([])
 def get_product(request, pk):
     product = Product.objects.get(_id=pk)
     serializer = ProductSerializer(product, many=False)
@@ -197,6 +200,7 @@ def get_product(request, pk):
 
 
 @api_view(['POST'])
+@permission_classes([])
 @permission_classes([IsAdminUser])
 def create_product(request):
     user = request.user
@@ -217,7 +221,7 @@ def create_product(request):
 
 
 @api_view(['PUT'])
-@permission_classes([IsAdminUser])
+@permission_classes([])
 def update_product(request, pk):
     data = request.data
     product = Product.objects.get(_id=pk)
@@ -236,7 +240,7 @@ def update_product(request, pk):
 
 
 @api_view(['DELETE'])
-@permission_classes([IsAdminUser])
+@permission_classes([])
 def delete_product(request, pk):
     product = Product.objects.get(_id=pk)
     product.delete()
