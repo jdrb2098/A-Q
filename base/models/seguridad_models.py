@@ -8,7 +8,7 @@ from django.utils import timezone
 import uuid
 
 from ..managers import CustomUserManager
-from .base_models import Enterprise
+from ..models import Enterprise
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -28,3 +28,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+
+class CentroCostos(models.Model):
+    nombre = models.CharField(max_length=250)
+    empresa = models.ForeignKey(Enterprise, on_delete=models.CASCADE)
+    presupuesto = models.DecimalField(max_digits=11, decimal_places=2, null=True, blank=True)
+    autorizador_solicitudes = models.ForeignKey(User, on_delete=models.CASCADE)

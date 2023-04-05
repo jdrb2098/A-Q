@@ -8,7 +8,7 @@ from django.utils import timezone
 from base.models.base_models import Enterprise
 import uuid
 
-from .managers import CustomUserManager
+from ..managers import CustomUserManager
 
 
 class Bodegas(models.Model):

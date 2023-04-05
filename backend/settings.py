@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'base.apps.BaseConfig',
 ]
 
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
        'rest_framework.permissions.IsAuthenticated',
@@ -132,11 +133,11 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('AQ_DB_NAME'),
-        'USER': os.environ.get('AQ_DB_USER'),
-        'PASSWORD': os.environ.get('AQ_DB_PASSWORD'),
-        'HOST': os.environ.get('AQ_DB_HOST'),
-        'PORT': os.environ.get('AQ_DB_PORT'),
+        'NAME': "AQ",
+        'USER': "postgres",
+        'PASSWORD': '7447',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 

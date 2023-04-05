@@ -1,7 +1,7 @@
 from dataclasses import fields
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import Product, Solped, SolpedItem, ShippingAddress, Enterprise, User, Categoria,SubCategoria,CategoriasProducto
+from ..models import Product, Solped, SolpedItem, ShippingAddress, Enterprise, User, Categoria, SubCategoria, CategoriasProducto
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -37,7 +37,6 @@ class UserSerializerWithToken(UserSerializer):
     def get_token(self, obj):
         token = RefreshToken.for_user(obj)
         return str(token.access_token)
-
 
 
 class EnterpriseSerializer(serializers.ModelSerializer):
@@ -96,15 +95,17 @@ class SolpedSerializer(serializers.ModelSerializer):
 
 class CategoriaSerializer(serializers.ModelSerializer):
     class Meta:
-        model=Categoria
+        model = Categoria
         fields = '__all__'
 
 
 class SubCategoriaSerializer(serializers.ModelSerializer):
     class Meta:
-        model=SubCategoria
+        model = SubCategoria
         fields = '__all__'
+
+
 class CategoriaProductoSerializer(serializers.ModelSerializer):
     class Meta:
-        model=SubCategoria
+        model = SubCategoria
         fields = '__all__'

@@ -7,16 +7,16 @@ from django.contrib.auth.admin import UserAdmin
 from .models import *
 
 # Register your models here.
-admin.site.register(User)
-admin.site.register(Enterprise)
-admin.site.register(Product)
-admin.site.register(Solped)
-admin.site.register(SolpedItem)
-admin.site.register(Oferta)
-admin.site.register(ShippingAddress)
-admin.site.register(Categoria)
-admin.site.register(CategoriasProducto)
-admin.site.register(SubCategoria)
+#admin.site.register(User)
+#admin.site.register(Enterprise)
+#admin.site.register(Product)
+#admin.site.register(Solped)
+#admin.site.register(SolpedItem)
+#admin.site.register(Oferta)
+#admin.site.register(ShippingAddress)
+#admin.site.register(Categoria)
+#admin.site.register(CategoriasProducto)
+#admin.site.register(SubCategoria)
 
 
 
