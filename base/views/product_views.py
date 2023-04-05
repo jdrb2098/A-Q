@@ -155,9 +155,9 @@ def filter_subcategories(request, pk):
 
 @api_view(['GET'])
 @permission_classes([])
-def get_products(request):
+def get_products_page(request):
     query = request.query_params.get('keyword')
-    if query == None:
+    if query is None:
         query = ''
 
     products = Product.objects.distinct().filter(
@@ -185,6 +185,14 @@ def get_products(request):
 
 @api_view(['GET'])
 @permission_classes([])
+def get_products(request):
+    products = Product.objects.all()
+    serializer = ProductSerializer(products, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([])
 def get_top_products(request):
     products = Product.objects.filter(rating__gte=4).order_by('-rating')[0:5]
     serializer = ProductSerializer(products, many=True)
@@ -201,21 +209,23 @@ def get_product(request, pk):
 
 @api_view(['POST'])
 @permission_classes([])
-@permission_classes([IsAdminUser])
 def create_product(request):
-    user = request.user
-    id_categoria = request.data['id_categoria']
+    #user = request.user
+    #id_categoria = request.data['id_categoria']
     product = Product.objects.create(
-        user=user,
+        #user=user,
+        #user=request.data['user'],
         #id_producto=f'{id_categoria}{id_subcategoria}{codigoproducto}',
-        name='Sample Name',
-        price=0,
-        brand='Sample Brand',
-        countInStock=0,
-        category='Sample Category',
-        description=''
+        name=request.data['name'],
+        price=request.data['price'],
+        brand=request.data['brand'],
+        categoria=Categoria.objects.get(id_categoria=request.data['categoria']),
+        description=request.data['description'],
+        image=request.data['image'],
+        valor_unitario=request.data['valor_unitario'],
+        referenceCode=request.data['referenceCode'],
+        cantidad=request.data['cantidad'],
     )
-
     serializer = ProductSerializer(product, many=False)
     return Response(serializer.data)
 
@@ -223,16 +233,26 @@ def create_product(request):
 @api_view(['PUT'])
 @permission_classes([])
 def update_product(request, pk):
-    data = request.data
-    product = Product.objects.get(_id=pk)
+    try:
+        product = Product.objects.get(pk=pk)
+    except Product.DoesNotExist:
+        return Response({'message': 'El producto no existe'}, status=status.HTTP_404_NOT_FOUND)
 
-    product.name = data['name']
-    product.price = data['price']
-    product.brand = data['brand']
-    product.countInStock = data['countInStock']
-    product.category = data['category']
-    product.description = data['description']
-
+    product.name = request.data.get('name', product.name)
+    product.price = request.data.get('price', product.price)
+    product.brand = request.data.get('brand', product.brand)
+    categoria_id = request.data.get('categoria', None)
+    if categoria_id:
+        try:
+            categoria = Categoria.objects.get(id_categoria=categoria_id)
+            product.categoria = categoria
+        except Categoria.DoesNotExist:
+            return Response({'message': 'La categoría no existe'}, status=status.HTTP_404_NOT_FOUND)
+    product.description = request.data.get('description', product.description)
+    product.image = request.data.get('image', product.image)
+    product.valor_unitario = request.data.get('valor_unitario', product.valor_unitario)
+    product.referenceCode = request.data.get('referenceCode', product.referenceCode)
+    product.cantidad = request.data.get('cantidad', product.cantidad)
     product.save()
 
     serializer = ProductSerializer(product, many=False)
@@ -242,9 +262,15 @@ def update_product(request, pk):
 @api_view(['DELETE'])
 @permission_classes([])
 def delete_product(request, pk):
-    product = Product.objects.get(_id=pk)
+    try:
+        product = Product.objects.get(pk=pk)
+    except Product.DoesNotExist:
+        return Response({'message': 'El producto no existe'}, status=status.HTTP_404_NOT_FOUND)
+
     product.delete()
-    return Response('Producted Deleted')
+
+    return Response({'message': 'Producto eliminado exitosamente'}, status=status.HTTP_204_NO_CONTENT)
+
 
 
 @api_view(['POST'])
