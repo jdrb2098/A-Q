@@ -20,6 +20,12 @@ class Categoria(models.Model):
         return self.nombre
 
 
+class SubCategoria(models.Model):
+    id_sub_categoria = models.CharField(max_length=11, editable=False, primary_key=True)
+    nombre = models.CharField(max_length=255)
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
+
+
 class UnidadesMedida(models.Model):
     id_unidad_medida = models.AutoField(primary_key=True, editable=False, db_column='T055IdUnidadMedida')
     nombre = models.CharField(max_length=50, db_column='T055nombre',unique=True)
@@ -42,7 +48,6 @@ class Product(models.Model):
     name = models.CharField(max_length=200, null=True, blank=True)
     image = models.ImageField(null=True, blank=True, default='/placeholder.png')
     brand = models.CharField(max_length=200, null=True, blank=True)
-    categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     price = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
     createdAt = models.DateTimeField(auto_now_add=True)
@@ -58,15 +63,16 @@ class Product(models.Model):
         return self.name
 
 
-class SubCategoria(models.Model):
-    id_sub_categoria = models.CharField(max_length=11, primary_key=True, editable=False)
-    nombre = models.CharField(max_length=255)
-    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
-
-
 class CategoriasProducto(models.Model):
-    id_categorias_producto = models.AutoField(primary_key=True,editable=False)
+    id_categorias_producto = models.AutoField(primary_key=True, editable=False)
     id_categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
     id_producto = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+
+class SubCategoriasProducto(models.Model):
+    id_sub_categorias_producto = models.AutoField(primary_key=True, editable=False)
+    id_sub_categoria = models.ForeignKey(SubCategoria, on_delete=models.CASCADE, default=None)
+    id_producto = models.ForeignKey(Product, on_delete=models.CASCADE)
+
 
 

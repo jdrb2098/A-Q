@@ -10,6 +10,8 @@ from base.serializers import ProductSerializer, CategoriaSerializer, SubCategori
 from rest_framework import status
 from base.models import *
 
+""" Categorias """
+# Vista para crear una nueva categoría
 @api_view(['POST'])
 @permission_classes([])
 def create_categories(request):
@@ -23,7 +25,7 @@ def create_categories(request):
     serializer = CategoriaSerializer(category, many=False)
     return Response(serializer.data)
 
-
+# Vista para leer todas las categorías
 @api_view(['GET'])
 @permission_classes([])
 def get_categories(request):
@@ -31,7 +33,7 @@ def get_categories(request):
     serializer = CategoriaSerializer(categories, many=True)
     return Response(serializer.data)
 
-
+# Vista para leer una categoría específica por clave primaria (pk)
 @api_view(['GET'])
 @permission_classes([])
 def get_category(request, pk):
@@ -210,24 +212,36 @@ def get_product(request, pk):
 @api_view(['POST'])
 @permission_classes([])
 def create_product(request):
-    #user = request.user
-    #id_categoria = request.data['id_categoria']
+    name = request.data.get('name')
+    categorias_ids = request.data.get('categorias')
+    subcategorias_ids = request.data.get('subcategorias')
+
     product = Product.objects.create(
-        #user=user,
-        #user=request.data['user'],
-        #id_producto=f'{id_categoria}{id_subcategoria}{codigoproducto}',
-        name=request.data['name'],
-        price=request.data['price'],
-        brand=request.data['brand'],
-        categoria=Categoria.objects.get(id_categoria=request.data['categoria']),
-        description=request.data['description'],
-        image=request.data['image'],
-        valor_unitario=request.data['valor_unitario'],
-        referenceCode=request.data['referenceCode'],
-        cantidad=request.data['cantidad'],
+        name=name,
+        price=request.data.get('price'),
+        brand=request.data.get('brand'),
+        description=request.data.get('description'),
+        image=request.data.get('image'),
+        valor_unitario=request.data.get('valor_unitario'),
+        referenceCode=request.data.get('referenceCode'),
+        cantidad=request.data.get('cantidad'),
     )
-    serializer = ProductSerializer(product, many=False)
-    return Response(serializer.data)
+
+    if categorias_ids is not None:
+        for categoria_id in categorias_ids:
+            print(categoria_id)
+            categoria = Categoria.objects.get(id_categoria=categoria_id)
+            CategoriasProducto.objects.create(id_categoria=categoria, id_producto=product)
+
+    if subcategorias_ids is not None:
+        for subcategoria_id in subcategorias_ids:
+            subcategoria = SubCategoria.objects.get(id_sub_categoria=subcategoria_id)
+            SubCategoriasProducto.objects.create(id_sub_categoria=subcategoria, id_producto=product)
+
+    serializer = ProductSerializer(product)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
 
 
 @api_view(['PUT'])
