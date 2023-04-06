@@ -12,31 +12,31 @@ magnitudes_CHOICES = (
 )
 
 
-class Categoria(models.Model):
-    id_categoria = models.CharField(max_length=11, primary_key=True, editable=False)
-    nombre = models.CharField(max_length=255)
+class Category(models.Model):
+    id_category = models.CharField(max_length=11, primary_key=True, editable=False)
+    name = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.nombre
+        return self.name
 
 
-class SubCategoria(models.Model):
-    id_sub_categoria = models.CharField(max_length=11, editable=False, primary_key=True)
-    nombre = models.CharField(max_length=255)
-    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
+class SubCategory(models.Model):
+    id_sub_category = models.CharField(max_length=11, editable=False, primary_key=True)
+    name = models.CharField(max_length=255)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
 
-class UnidadesMedida(models.Model):
-    id_unidad_medida = models.AutoField(primary_key=True, editable=False, db_column='T055IdUnidadMedida')
-    nombre = models.CharField(max_length=50, db_column='T055nombre',unique=True)
-    abreviatura = models.CharField(max_length=5, db_column='T055abreviatura',unique=True)
-    id_magnitud = models.PositiveSmallIntegerField(choices=magnitudes_CHOICES, db_column='T055Id_Magnitud')
-    precargado = models.BooleanField(default=False, db_column='T055registroPrecargado')
-    activo = models.BooleanField(default=True, db_column='T055activo')
-    item_ya_usado = models.BooleanField(default=False, db_column='T055itemYaUsado')
+class MeasurementUnits(models.Model):
+    id_measurement_unit = models.AutoField(primary_key=True, editable=False, db_column='T055IdUnidadMedida')
+    name = models.CharField(max_length=50, db_column='T055nombre',unique=True)
+    abbreviation = models.CharField(max_length=5, db_column='T055abreviatura',unique=True)
+    id_magnitude = models.PositiveSmallIntegerField(choices=magnitudes_CHOICES, db_column='T055Id_Magnitud')
+    preloaded = models.BooleanField(default=False, db_column='T055registroPrecargado')
+    active = models.BooleanField(default=True, db_column='T055activo')
+    item_already_used = models.BooleanField(default=False, db_column='T055itemYaUsado')
 
     def __str__(self):
-        return str(self.nombre)
+        return str(self.name)
 
     class Meta:
         db_table = 'T055UnidadesMedida'
@@ -50,12 +50,12 @@ class Product(models.Model):
     brand = models.CharField(max_length=200, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     price = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
-    createdAt = models.DateTimeField(auto_now_add=True)
-    referenceCode=models.CharField(max_length=200, null=True, blank=True)
-    cantidad = models.IntegerField(null=True, blank=True, default=0)
-    unidadDeMedida = models.ForeignKey(UnidadesMedida, on_delete=models.SET_NULL, blank=True, null=True)
-    valor_unitario = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
-    is_bien = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    reference_code = models.CharField(max_length=200, null=True, blank=True)
+    quantity = models.IntegerField(null=True, blank=True, default=0)
+    measurement_unit = models.ForeignKey(MeasurementUnits, on_delete=models.SET_NULL, blank=True, null=True)
+    unit_price = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
+    is_good = models.BooleanField(default=False)
     is_service = models.BooleanField(default=False)
     _id = models.AutoField(primary_key=True, editable=False)
 
@@ -63,16 +63,17 @@ class Product(models.Model):
         return self.name
 
 
-class CategoriasProducto(models.Model):
-    id_categorias_producto = models.AutoField(primary_key=True, editable=False)
-    id_categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
-    id_producto = models.ForeignKey(Product, on_delete=models.CASCADE)
+class CategoryProduct(models.Model):
+    id_category_product = models.AutoField(primary_key=True, editable=False)
+    id_category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    id_product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
 
-class SubCategoriasProducto(models.Model):
-    id_sub_categorias_producto = models.AutoField(primary_key=True, editable=False)
-    id_sub_categoria = models.ForeignKey(SubCategoria, on_delete=models.CASCADE, default=None)
-    id_producto = models.ForeignKey(Product, on_delete=models.CASCADE)
+class SubCategoryProduct(models.Model):
+    id_sub_category_product = models.AutoField(primary_key=True, editable=False)
+    id_sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, default=None)
+    id_product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
 
 
 

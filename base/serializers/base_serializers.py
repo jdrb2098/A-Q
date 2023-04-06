@@ -1,7 +1,7 @@
 from dataclasses import fields
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
-from ..models import Product, Solped, SolpedItem, ShippingAddress, Enterprise, User, Categoria, SubCategoria, CategoriasProducto
+from ..models import Product, Solped, SolpedItem, ShippingAddress, Enterprise, User, Category, SubCategory, CategoryProduct, SubCategoryProduct, MeasurementUnits, Warehouse, CostCenter, SuppliersEvent, ObservationsSolped, PrivateEvent
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -92,19 +92,19 @@ class SolpedSerializer(serializers.ModelSerializer):
         return serializer.data
 
 
-class CategoriaSerializer(serializers.ModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = Categoria
+        model = Category
         fields = '__all__'
 
 
-class SubCategoriaSerializer(serializers.ModelSerializer):
+class SubCategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = SubCategoria
+        model = SubCategory
         fields = '__all__'
 
 
-class CategoriaProductoSerializer(serializers.ModelSerializer):
+class CategoryProductSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SubCategoria
+        model = SubCategory
         fields = '__all__'

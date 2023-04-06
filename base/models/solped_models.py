@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.functions import Cos
+
 from ..models import *
 
 incoterms_CHOICES = (
@@ -16,7 +18,7 @@ incoterms_CHOICES = (
     ('CIF', 'CIF Cost, Insurance and Freight/ Coste, Seguro y Flete'),
 )
 
-nivel_prioridad_CHOICES = (
+priority_level_CHOICES = (
     (1, 'Alta'),
     (2, 'Media'),
     (3, 'Baja')
@@ -24,30 +26,29 @@ nivel_prioridad_CHOICES = (
 
 
 class Solped(models.Model):
-    usuario_creador = models.ForeignKey(User, on_delete=models.CASCADE, related_name='creador')
-    descripcion = models.TextField()
-    centro_de_costos = models.ForeignKey(CentroCostos, on_delete=models.CASCADE)
-    negociador_asignado = models.ForeignKey(User, on_delete=models.SET_NULL ,null=True, blank=True, related_name='negociador')
-    bodega = models.ForeignKey(Bodegas, on_delete=models.CASCADE)
-    fecha_limite_resolucion = models.DateField()
-    totalPrice = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
+    creator_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='creador')
+    description = models.TextField()
+    cost_center = models.ForeignKey(CostCenter, on_delete=models.CASCADE)
+    assigned_negotiator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='negociador')
+    warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE)
+    resolution_deadline = models.DateField()
+    total_price = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
     createdAt = models.DateTimeField(auto_now_add=True)
-    is_Autorized = models.BooleanField(default=False)
-    fachaDeAtorizacion = models.DateTimeField(auto_now_add=False, null=True, blank=True)
-    nivel_prioridad = models.TextField(choices=nivel_prioridad_CHOICES)
-    is_cancelada = models.BooleanField(default=False)
-    documento = models.FileField(blank=True, null=True)
+    is_authorized = models.BooleanField(default=False)
+    authorization_date = models.DateTimeField(auto_now_add=False, null=True, blank=True)
+    priority_level = models.TextField(choices=priority_level_CHOICES)
+    is_canceled = models.BooleanField(default=False)
+    document = models.FileField(blank=True, null=True)
     _id = models.AutoField(primary_key=True, editable=False)
-
 
     def __str__(self):
         return str(self.createdAt)
 
 
-class ObservacionesSolped(models.Model):
+class ObservationsSolped(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    fecha_de_creacion = models.DateTimeField(auto_now_add=True)
-    Observacion = models.TextField()
+    creation_date = models.DateTimeField(auto_now_add=True)
+    observation = models.TextField()
     solped = models.ForeignKey(Solped, on_delete=models.CASCADE, null=True, blank=True)
 
 
@@ -55,7 +56,7 @@ class SolpedItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
     solped = models.ForeignKey(Solped, on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField(max_length=200, null=True, blank=True)
-    qty = models.IntegerField(null=True, blank=True, default=0)
+    quantity = models.IntegerField(null=True, blank=True, default=0)
     price = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
     image = models.CharField(max_length=200, null=True, blank=True)
     _id = models.AutoField(primary_key=True, editable=False)
@@ -69,25 +70,25 @@ class ShippingAddress(models.Model):
         Solped, on_delete=models.CASCADE)
     address = models.CharField(max_length=200, null=True, blank=True)
     city = models.CharField(max_length=200, null=True, blank=True)
-    postalCode = models.CharField(max_length=200, null=True, blank=True)
+    postal_code = models.CharField(max_length=200, null=True, blank=True)
     country = models.CharField(max_length=200, null=True, blank=True)
-    shippingPrice = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
+    shipping_price = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
     _id = models.AutoField(primary_key=True, editable=False)
-    cedula = models.CharField(max_length=10, null=True, blank=True)
-    numeroTelefonico = models.CharField(max_length=15, null=True, blank=True)
+    identification_card = models.CharField(max_length=10, null=True, blank=True, db_column='cedula')
+    phone_number = models.CharField(max_length=15, null=True, blank=True)
 
     def __str__(self):
         return str(self.address)
 
 
-class Oferta(models.Model):
+class Offer(models.Model):
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     solped = models.OneToOneField(Solped, on_delete=models.CASCADE, null=True)
-    taxPrice = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
-    shippingPrice = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
+    tax_price = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
+    shipping_price = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
     totalPrice = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
-    tiempoDeEntrega = models.DateTimeField(auto_now_add=False, null=True, blank=True)
-    garantia = models.TextField(null=True, blank=True)
+    delivery_time = models.DateTimeField(auto_now_add=False, null=True, blank=True)
+    warranty = models.TextField(null=True, blank=True)
     marca = models.CharField(max_length=200, null=True, blank=True)
     _id = models.AutoField(primary_key=True, editable=False)
 
@@ -95,27 +96,27 @@ class Oferta(models.Model):
         return str(self.createdAt)
 
 
-class HistoricoDeCompra(models.Model):
-    nombre_material = models.CharField(max_length=255)
-    codigo_material = models.CharField(max_length=50)
-    proveedor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    precio_unitario = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
-    precio_total = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
+class PurchaseHistory(models.Model):
+    material_name = models.CharField(max_length=255)
+    material_code = models.CharField(max_length=50)
+    supplier = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    unit_price = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
+    total_price = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
 
 
-class Evento_Proveedores(models.Model):
-    titulo_evento = models.CharField(max_length=255)
-    descripcion = models.TextField()
-    ver_documento = models.BooleanField(default=True)
+class SuppliersEvent(models.Model):
+    event_title = models.CharField(max_length=255)
+    description = models.TextField()
+    view_document = models.BooleanField(default=True)
     solped = models.ForeignKey(Solped, on_delete=models.CASCADE)
-    puede_cargar_documentos = models.BooleanField(default=True)
-    documentos = models.FileField(blank=True, null=True)
+    can_upload_documents = models.BooleanField(default=True)
+    documents = models.FileField(blank=True, null=True)
     icoterms = models.TextField(choices=incoterms_CHOICES, null=True, blank=True)
     is_private = models.BooleanField(default=False)
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-    fecha_finalizacion = models.DateTimeField()
+    creation_date = models.DateTimeField(auto_now_add=True)
+    end_date = models.DateTimeField()
 
 
-class EventoPrivado(models.Model):
-    evento = models.ForeignKey(Evento_Proveedores, on_delete=models.SET_NULL, null=True, blank=True)
-    preveedor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+class PrivateEvent(models.Model):
+    event = models.ForeignKey(SuppliersEvent, on_delete=models.SET_NULL, null=True, blank=True)
+    supplier = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
