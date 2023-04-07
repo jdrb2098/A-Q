@@ -3,5 +3,5 @@ from base.views import solped_views as views
 
 
 urlpatterns = [
-    path('create-solped/', views.CreateSolped.as_view(), name= "create-solped")
+    path('create-solped/', views.SolpedCreateView.as_view(), name= "create-solped")
 ]

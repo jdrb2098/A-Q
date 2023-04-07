@@ -44,9 +44,12 @@ INSTALLED_APPS = [
     'corsheaders',
     'storages',
     'drf_yasg',
+    'django_crontab',
 
     'base.apps.BaseConfig',
 ]
+
+#CRONJOBS = [    ('*/5 * * * *', 'myapp.tasks.my_cron_job'),    ('0 0 * * *', 'myapp.tasks.my_daily_job'),]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (

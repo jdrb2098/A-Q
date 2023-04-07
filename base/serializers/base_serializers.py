@@ -64,34 +64,6 @@ class SolpedItemSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class SolpedSerializer(serializers.ModelSerializer):
-    solpedItems = serializers.SerializerMethodField(read_only=True)
-    shippingAddress = serializers.SerializerMethodField(read_only=True)
-    user = serializers.SerializerMethodField(read_only=True)
-
-    class Meta:
-        model = Solped
-        fields = '__all__'
-
-    def get_solpedItems(self, obj):
-        items = obj.solpeditem_set.all()
-        serializer = SolpedItemSerializer(items, many=True)
-        return serializer.data
-
-    def get_shippingAddress(self, obj):
-        try:
-            address = ShippingAddressSerializer(
-                obj.shippingaddress, many=False).data
-        except:
-            address = False
-        return address
-
-    def get_user(self, obj):
-        user = obj.user
-        serializer = UserSerializer(user, many=False)
-        return serializer.data
-
-
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -101,4 +73,16 @@ class CategorySerializer(serializers.ModelSerializer):
 class SubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategory
+        fields = '__all__'
+
+
+class CategoryProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubCategory
+        fields = '__all__'
+
+class SolpedSerializer(serializers.ModelSerializer):
+    SolpedItems = serializers.StringRelatedField(many=True)
+    class Meta:
+        model = Solped
         fields = '__all__'

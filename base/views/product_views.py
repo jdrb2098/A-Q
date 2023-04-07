@@ -221,29 +221,40 @@ def get_product(request, pk):
 
 
 @api_view(['POST'])
-@permission_classes([])
+@permission_classes([IsAuthenticated, IsAdminUser])
 def create_product(request):
-    name = request.data.get('name')
-    category = get_object_or_404(Category, pk=request.data.get('category'))
-    subcategory = get_object_or_404(SubCategory, pk=request.data.get('sub_category'))
+    user = request.user
+    enterprise = User.objects.get(user).enterprise
+    if enterprise == "AQ":
+        name = request.data.get('name')
+        categories_ids = request.data.get('categories')
+        subcategories_ids = request.data.get('subcategories')
+        serial = request.data.get('serial')
 
-    product = Product.objects.create(
-        name=name,
-        category=category,
-        sub_category=subcategory,
-        price=request.data.get('price'),
-        brand=request.data.get('brand'),
-        description=request.data.get('description'),
-        image=request.data.get('image'),
-        unit_price=request.data.get('unit_price'),
-        reference_code=request.data.get('reference_code'),
-        quantity=request.data.get('quantity'),
-    )
+        product = Product.objects.create(
+            name=name,
+            price=request.data.get('price'),
+            brand=request.data.get('brand'),
+            description=request.data.get('description'),
+            image=request.data.get('image'),
+            unit_price=request.data.get('unit_price'),
+            reference_code=request.data.get('reference_code'),
+            quantity=request.data.get('quantity'),
+            _id = f"{categories_ids}{subcategories_ids}{serial}"
+        )
 
-    if not product:
-        return Response({'error': 'No se pudo crear el producto'}, status=status.HTTP_400_BAD_REQUEST)
-    serializer = ProductSerializer(product)
-    return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if categories_ids is not None:
+            for category_id in categories_ids:
+                category = Category.objects.get(id_category=category_id)
+                CategoryProduct.objects.create(id_category=category, id_product=product)
+
+        if subcategories_ids is not None:
+            for subcategory_id in subcategories_ids:
+                subcategory = SubCategory.objects.get(id_sub_category=subcategory_id)
+                SubCategoryProduct.objects.create(id_sub_category=subcategory, id_product=product)
+
+        serializer = ProductSerializer(product)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 @api_view(['PUT'])
