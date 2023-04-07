@@ -45,6 +45,7 @@ class MeasurementUnits(models.Model):
 
 
 class Product(models.Model):
+
     name = models.CharField(max_length=200, null=True, blank=True)
     image = models.ImageField(null=True, blank=True, default='/placeholder.png')
     brand = models.CharField(max_length=200, null=True, blank=True)
@@ -57,7 +58,7 @@ class Product(models.Model):
     unit_price = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
     is_good = models.BooleanField(default=False)
     is_service = models.BooleanField(default=False)
-    _id = models.AutoField(primary_key=True, editable=False)
+    _id = models.CharField(primary_key=True, max_length=8)
 
     def __str__(self):
         return self.name
