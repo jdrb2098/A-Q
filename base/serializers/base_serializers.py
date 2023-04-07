@@ -82,7 +82,11 @@ class CategoryProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class SolpedSerializer(serializers.ModelSerializer):
-    productos = serializers.StringRelatedField(many=True)
     class Meta:
         model = Solped
         fields = '__all__'
+
+class SolpedItemsSerielizer(serializers.ModelSerializer):
+    class Meta:
+        model = SolpedItem
+        fields = "__all__"

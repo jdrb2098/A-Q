@@ -14,7 +14,7 @@ magnitudes_CHOICES = (
 
 class Category(models.Model):
     category_id = models.AutoField(primary_key=True, editable=False)
-    reference_code = models.CharField(max_length=2, editable=True)
+    reference_code = models.CharField(max_length=2)
     name = models.CharField(max_length=255)
 
     def __str__(self):
@@ -23,7 +23,7 @@ class Category(models.Model):
 
 class SubCategory(models.Model):
     subcategory_id = models.AutoField(primary_key=True, editable=False)
-    reference_code = models.CharField(max_length=2, editable=True, primary_key=True)
+    reference_code = models.CharField(max_length=2)
     name = models.CharField(max_length=255)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
