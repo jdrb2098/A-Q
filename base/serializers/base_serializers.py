@@ -1,7 +1,7 @@
 from dataclasses import fields
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
-from ..models import Product, Solped, SolpedItem, ShippingAddress, Enterprise, User, Category, SubCategory, CategoryProduct, SubCategoryProduct, MeasurementUnits, Warehouse, CostCenter, SuppliersEvent, ObservationsSolped, PrivateEvent
+from ..models import Product, Solped, SolpedItem, ShippingAddress, Enterprise, User, Category, SubCategory, MeasurementUnits, Warehouse, CostCenter, SuppliersEvent, ObservationsSolped, PrivateEvent
 
 
 class UserSerializer(serializers.ModelSerializer):

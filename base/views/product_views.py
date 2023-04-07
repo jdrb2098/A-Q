@@ -5,25 +5,26 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.response import Response
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.shortcuts import get_object_or_404
 
 from base.serializers import ProductSerializer, CategorySerializer, SubCategorySerializer
 from rest_framework import status
 from base.models import *
 
+
 """ Categorias """
+
+
 # Vista para crear una nueva categoría
 @api_view(['POST'])
 @permission_classes([])
 def create_categories(request):
-    #user = request.user
-    data = request.data
-    category = Category.objects.create(
-        #user=user,
-        name=data['name'],
-        id_category=data['id_category']
-    )
-    serializer = CategorySerializer(category, many=False)
-    return Response(serializer.data)
+    serializer = CategorySerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # Vista para leer todas las categorías
@@ -31,8 +32,10 @@ def create_categories(request):
 @permission_classes([])
 def get_categories(request):
     categories = Category.objects.all()
+    if not categories:
+        return Response({'error': 'No se encontraron categorias'}, status=status.HTTP_404_NOT_FOUND)
     serializer = CategorySerializer(categories, many=True)
-    return Response(serializer.data)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 # Vista para leer una categoría específica por clave primaria (pk)
@@ -42,9 +45,9 @@ def get_category(request, pk):
     try:
         category = Category.objects.get(pk=pk)
         serializer = CategorySerializer(category, many=False)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     except Category.DoesNotExist:
-        return Response({'error': 'Categoria no encontrada'}, status=404)
+        return Response({'error': 'Categoria no encontrada'}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['PUT'])
@@ -52,14 +55,14 @@ def get_category(request, pk):
 def update_category(request, pk):
     try:
         category = Category.objects.get(pk=pk)
-        data = request.data
-        category.id_category = data.get('id_category')
-        category.name = data.get('name')
-        category.save()
-        serializer = CategorySerializer(category, many=False)
-        return Response(serializer.data)
+        serializer = CategorySerializer(category, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     except Category.DoesNotExist:
-        return Response({'error': 'Categoria no encontrada'}, status=404)
+        return Response({'error': 'Categoria no encontrada'}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['DELETE'])
@@ -68,9 +71,9 @@ def delete_category(request, pk):
     try:
         category = Category.objects.get(pk=pk)
         category.delete()
-        return Response({'message': 'Categoria eliminada correctamente'})
+        return Response({'message': 'Categoria eliminada correctamente'}, status=status.HTTP_204_NO_CONTENT)
     except Category.DoesNotExist:
-        return Response({'error': 'Categoria no encontrada'}, status=404)
+        return Response({'error': 'Categoria no encontrada'}, status=status.HTTP_404_NOT_FOUND)
 
 
 """ SubCategoria """
@@ -80,14 +83,14 @@ def delete_category(request, pk):
 @api_view(['POST'])
 @permission_classes([])
 def create_subcategory(request):
-    data = request.data
-    sub_category = SubCategory.objects.create(
-        name=data['name'],
-        id_sub_category=data['id_sub_category'],
-        category=Category.objects.get(id_categoria=data['category'])
-    )
-    serializer = SubCategorySerializer(sub_category, many=False)
-    return Response(serializer.data)
+    serializer = SubCategorySerializer(data=request.data)
+    if serializer.is_valid():
+        category_id = request.data.get('category')
+        category = get_object_or_404(Category, pk=category_id)
+        sub_category = serializer.save(category=category)
+        response = SubCategorySerializer(sub_category)
+        return Response(response.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # Vista para leer todas las subcategorías
@@ -95,6 +98,8 @@ def create_subcategory(request):
 @permission_classes([])
 def get_subcategories(request):
     subcategory = SubCategory.objects.all()
+    if not subcategory:
+        return Response({'error': 'No se encontraron subcategorías'}, status=status.HTTP_404_NOT_FOUND)
     serializer = SubCategorySerializer(subcategory, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -105,26 +110,26 @@ def get_subcategories(request):
 def get_subcategory(request, pk):
     try:
         subcategory = SubCategory.objects.get(pk=pk)
+        serializer = SubCategorySerializer(subcategory, many=False)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     except SubCategory.DoesNotExist:
-        return Response({"message": "Subcategoría no encontrada"}, status=404)
-
-    serializer = SubCategorySerializer(subcategory, many=False)
-    return Response(serializer.data)
+        return Response({"message": "Subcategoría no encontrada"}, status=status.HTTP_404_NOT_FOUND)
 
 
 # Vista para actualizar una subcategoría existente
 @api_view(['PUT'])
 @permission_classes([])
 def update_subcategory(request, pk):
-    subcategory = SubCategory.objects.get(pk=pk)
-    data = request.data
-    subcategory.id_sub_category = data.get('id_sub_category')  # actualiza el id
-    subcategory.name = data.get('name')  # actualiza el nombre
-    subcategory.category = Category.objects.get(id_category=data.get('category'))  # actualiza la categoría
-    subcategory.save()
-    serializer = SubCategorySerializer(subcategory, many=False)
-
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    try:
+        subcategory = SubCategory.objects.get(pk=pk)
+        subcategory.name = request.data.get('name', subcategory.name)
+        subcategory.id_sub_category = request.data.get('id_sub_category', subcategory.id_sub_category)
+        subcategory.category = get_object_or_404(Category, pk=request.data.get('category', subcategory.category))
+        subcategory.save()
+        serializer = SubCategorySerializer(subcategory, many=False)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except SubCategory.DoesNotExist:
+        return Response({'error': 'La subcategoría no existe'}, status=status.HTTP_404_NOT_FOUND)
 
 
 # Vista para eliminar una subcategoría existente
@@ -133,11 +138,10 @@ def update_subcategory(request, pk):
 def delete_subcategory(request, pk):
     try:
         subcategory = SubCategory.objects.get(pk=pk)
+        subcategory.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
     except SubCategory.DoesNotExist:
         return Response({'error': 'La subcategoría no existe'}, status=status.HTTP_404_NOT_FOUND)
-
-    subcategory.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # Vista para leer todas las subcategorías, con filtro por categoría
@@ -146,11 +150,12 @@ def delete_subcategory(request, pk):
 def filter_subcategories(request, pk):
     try:
         subcategories = SubCategory.objects.filter(category=pk)
+        serializer = SubCategorySerializer(subcategories, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     except SubCategory.DoesNotExist:
-        return Response({"message": "No se encontraron subcategorías para la categoría especificada"}, status=404)
+        return Response({"message": "No se encontraron subcategorías para la categoría especificada"}, status=status.HTTP_404_NOT_FOUND)
 
-    serializer = SubCategorySerializer(subcategories, many=True)
-    return Response(serializer.data)
+
 
 
 """ Productos """
@@ -190,8 +195,10 @@ def get_products_page(request):
 @permission_classes([])
 def get_products(request):
     products = Product.objects.all()
+    if not products:
+        return Response({'error': 'No se encontraron productos'}, status=status.HTTP_404_NOT_FOUND)
     serializer = ProductSerializer(products, many=True)
-    return Response(serializer.data)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
@@ -205,9 +212,12 @@ def get_top_products(request):
 @api_view(['GET'])
 @permission_classes([])
 def get_product(request, pk):
-    product = Product.objects.get(pk=pk)
-    serializer = ProductSerializer(product, many=False)
-    return Response(serializer.data)
+    try:
+        product = Product.objects.get(pk=pk)
+        serializer = ProductSerializer(product, many=False)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Product.DoesNotExist:
+        return Response({"message": "Producto no encontrado"}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])
@@ -266,7 +276,7 @@ def update_product(request, pk):
     product.save()
 
     serializer = ProductSerializer(product, many=False)
-    return Response(serializer.data)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['DELETE'])
@@ -274,40 +284,10 @@ def update_product(request, pk):
 def delete_product(request, pk):
     try:
         product = Product.objects.get(pk=pk)
+        product.delete()
+        return Response({'message': 'Producto eliminado exitosamente'}, status=status.HTTP_204_NO_CONTENT)
     except Product.DoesNotExist:
         return Response({'message': 'El producto no existe'}, status=status.HTTP_404_NOT_FOUND)
-
-    product.delete()
-
-    return Response({'message': 'Producto eliminado exitosamente'}, status=status.HTTP_204_NO_CONTENT)
-
-
-@api_view(['POST'])
-@permission_classes([])
-def create_category_product(request):
-    category_id = request.data.get('category_id')
-    product_id = request.data.get('product_id')
-
-    category = Category.objects.get(id_category=category_id)
-    product = Product.objects.get(id_product=product_id)
-
-    CategoryProduct.objects.create(id_category=category, id_product=product)
-
-    return Response(status=status.HTTP_201_CREATED)
-
-
-@api_view(['POST'])
-@permission_classes([])
-def create_subcategory_product(request):
-    subcategory_id = request.data.get('subcategory_id')
-    product_id = request.data.get('product_id')
-
-    subcategory = SubCategory.objects.get(id_sub_category=subcategory_id)
-    product = Product.objects.get(id_product=product_id)
-
-    SubCategoryProduct.objects.create(id_sub_category=subcategory, id_product=product)
-
-    return Response(status=status.HTTP_201_CREATED)
 
 
 """
