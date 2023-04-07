@@ -252,7 +252,7 @@ def update_product(request, pk):
 
     product.name = request.data.get('name', product.name)
     product.price = request.data.get('price', product.price)
-    product.brand = request.data.get('brand'    , product.brand)
+    product.brand = request.data.get('brand', product.brand)
     product.description = request.data.get('description', product.description)
     product.image = request.data.get('image', product.image)
     product.unit_price = request.data.get('unit_price', product.valor_unitario)
@@ -303,9 +303,6 @@ def create_subcategory_product(request):
     SubCategoryProduct.objects.create(id_sub_category=subcategory, id_product=product)
 
     return Response(status=status.HTTP_201_CREATED)
-
-
-
 
 
 """
