@@ -13,7 +13,8 @@ magnitudes_CHOICES = (
 
 
 class Category(models.Model):
-    id_category = models.CharField(max_length=11, primary_key=True, editable=False)
+    category_id = models.AutoField(primary_key=True, editable=False)
+    reference_code = models.CharField(max_length=2, editable=True)
     name = models.CharField(max_length=255)
 
     def __str__(self):
@@ -21,7 +22,8 @@ class Category(models.Model):
 
 
 class SubCategory(models.Model):
-    id_sub_category = models.CharField(max_length=11, editable=False, primary_key=True)
+    subcategory_id = models.AutoField(primary_key=True, editable=False)
+    reference_code = models.CharField(max_length=2, editable=True, primary_key=True)
     name = models.CharField(max_length=255)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
@@ -51,29 +53,16 @@ class Product(models.Model):
     description = models.TextField(null=True, blank=True)
     price = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    reference_code = models.CharField(max_length=200, null=True, blank=True)
+    reference_code = models.CharField(max_length=8, editable=True, null=True, blank=True)
     quantity = models.IntegerField(null=True, blank=True, default=0)
-    measurement_unit = models.ForeignKey(MeasurementUnits, on_delete=models.SET_NULL, blank=True, null=True)
+    measurement_unit = models.ForeignKey(MeasurementUnits, on_delete=models.CASCADE, blank=True, null=True)
     unit_price = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
     is_good = models.BooleanField(default=False)
     is_service = models.BooleanField(default=False)
-    _id = models.AutoField(primary_key=True, editable=False)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True)
+    sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, blank=True, null=True)
+    product_id = models.AutoField(primary_key=True, editable=False)
 
     def __str__(self):
         return self.name
-
-
-class CategoryProduct(models.Model):
-    id_category_product = models.AutoField(primary_key=True, editable=False)
-    id_category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    id_product = models.ForeignKey(Product, on_delete=models.CASCADE)
-
-
-class SubCategoryProduct(models.Model):
-    id_sub_category_product = models.AutoField(primary_key=True, editable=False)
-    id_sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, default=None)
-    id_product = models.ForeignKey(Product, on_delete=models.CASCADE)
-
-
-
-
+    
