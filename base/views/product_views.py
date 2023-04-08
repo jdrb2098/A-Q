@@ -55,14 +55,14 @@ def get_category(request, pk):
 def update_category(request, pk):
     try:
         category = Category.objects.get(pk=pk)
-        serializer = CategorySerializer(category, data=request.data)
+        serializer = CategorySerializer(category, data=request.data, many=False, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     except Category.DoesNotExist:
         return Response({'error': 'Categoria no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+
 
 
 @api_view(['DELETE'])
@@ -122,14 +122,14 @@ def get_subcategory(request, pk):
 def update_subcategory(request, pk):
     try:
         subcategory = SubCategory.objects.get(pk=pk)
-        subcategory.name = request.data.get('name', subcategory.name)
-        subcategory.id_sub_category = request.data.get('id_sub_category', subcategory.id_sub_category)
-        subcategory.category = get_object_or_404(Category, pk=request.data.get('category', subcategory.category))
-        subcategory.save()
-        serializer = SubCategorySerializer(subcategory, many=False)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    except SubCategory.DoesNotExist:
-        return Response({'error': 'La subcategoría no existe'}, status=status.HTTP_404_NOT_FOUND)
+        print(subcategory.reference_code)
+        serializer = SubCategorySerializer(subcategory, data=request.data, many=False, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Product.DoesNotExist:
+        return Response({'message': 'El producto no existe'}, status=status.HTTP_404_NOT_FOUND)
 
 
 # Vista para eliminar una subcategoría existente
@@ -223,36 +223,30 @@ def get_product(request, pk):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, IsAdminUser])
 def create_product(request):
-    user = request.user
-    enterprise = User.objects.get(user).enterprise
-    if enterprise == "AQ":
+    user_email = request.user
+    user = User.objects.get(email=user_email)
+    enterprise = Enterprise.objects.get(pk=user.enterprise.pk)
+    if enterprise.name == "AQ":
         name = request.data.get('name')
-        categories_ids = request.data.get('categories')
-        subcategories_ids = request.data.get('subcategories')
+        category = get_object_or_404(Category, pk=request.data.get('category'))
+        sub_category = get_object_or_404(SubCategory, pk=request.data.get('subcategory'))
         serial = request.data.get('serial')
 
         product = Product.objects.create(
             name=name,
+            category=category,
+            sub_category=sub_category,
             price=request.data.get('price'),
             brand=request.data.get('brand'),
             description=request.data.get('description'),
             image=request.data.get('image'),
             unit_price=request.data.get('unit_price'),
-            reference_code=request.data.get('reference_code'),
             quantity=request.data.get('quantity'),
-            _id = f"{categories_ids}{subcategories_ids}{serial}"
+            reference_code=f"{category.reference_code}{sub_category.reference_code}{serial}"
         )
 
-        if categories_ids is not None:
-            for category_id in categories_ids:
-                category = Category.objects.get(id_category=category_id)
-                CategoryProduct.objects.create(id_category=category, id_product=product)
-
-        if subcategories_ids is not None:
-            for subcategory_id in subcategories_ids:
-                subcategory = SubCategory.objects.get(id_sub_category=subcategory_id)
-                SubCategoryProduct.objects.create(id_sub_category=subcategory, id_product=product)
-
+        if product is None:
+            return Response({'error': 'No se pudo crear el producto'}, status=status.HTTP_400_BAD_REQUEST)
         serializer = ProductSerializer(product)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -262,21 +256,14 @@ def create_product(request):
 def update_product(request, pk):
     try:
         product = Product.objects.get(pk=pk)
+        serializer = ProductSerializer(product, data=request.data, many=False, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     except Product.DoesNotExist:
         return Response({'message': 'El producto no existe'}, status=status.HTTP_404_NOT_FOUND)
 
-    product.name = request.data.get('name', product.name)
-    product.price = request.data.get('price', product.price)
-    product.brand = request.data.get('brand', product.brand)
-    product.description = request.data.get('description', product.description)
-    product.image = request.data.get('image', product.image)
-    product.unit_price = request.data.get('unit_price', product.valor_unitario)
-    product.reference_code = request.data.get('reference_code', product.referenceCode)
-    product.quantity = request.data.get('quantity', product.cantidad)
-    product.save()
-
-    serializer = ProductSerializer(product, many=False)
-    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['DELETE'])

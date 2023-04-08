@@ -58,12 +58,6 @@ class ShippingAddressSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class SolpedItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SolpedItem
-        fields = '__all__'
-
-
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -81,12 +75,14 @@ class CategoryProductSerializer(serializers.ModelSerializer):
         model = SubCategory
         fields = '__all__'
 
+
 class SolpedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Solped
         fields = '__all__'
 
-class SolpedItemsSerielizer(serializers.ModelSerializer):
+
+class SolpedItemsSerializer(serializers.ModelSerializer):
     class Meta:
         model = SolpedItem
-        fields = "__all__"
+        fields = '__all__'

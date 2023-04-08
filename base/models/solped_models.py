@@ -28,9 +28,8 @@ priority_level_CHOICES = (
 class Solped(models.Model):
     creator_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='creador')
     description = models.TextField()
-    cost_center = models.ForeignKey(CostCenter, on_delete=models.CASCADE)
     assigned_negotiator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='negociador')
-    warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE)
+    warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, null=True, blank=True)
     resolution_deadline = models.DateField()
     total_price = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
     createdAt = models.DateTimeField(auto_now_add=True)

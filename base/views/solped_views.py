@@ -1,9 +1,11 @@
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from base.models import Solped, SolpedItem, Product
-from base.serializers import SolpedSerializer
+from base.serializers import SolpedSerializer, SolpedItemsSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework import status
 
 
 class SolpedCreateView(APIView):
@@ -22,22 +24,21 @@ class SolpedCreateView(APIView):
 @api_view(['POST'])
 def create_solped(request):
     # Crear solped
-    solped_serializer = SolpedSerializer(data=request.data)
+    solped_serializer = SolpedSerializer(data=request.data, partial=True)
     if solped_serializer.is_valid():
         solped = solped_serializer.save(creator_user=request.user)
-
         # Crear items
         items_data = request.data.get('items')
         for item_data in items_data:
-            # Obtener producto
-            product_id = item_data.get('product')
-            product = Product.objects.get(product_id=product_id)
-
-            # Crear item
-            item_serializer = SolpedItemSerializer(data=item_data)
-            if item_serializer.is_valid():
-                item_serializer.save(solped=solped, product=product)
-
-        return Response(solped_serializer.data)
+            product = Product.objects.get(pk=item_data.get('product_id'))
+            SolpedItem.objects.create(
+                solped=solped,
+                product=product,
+                name=item_data.get('name'),
+                quantity=item_data.get('quantity'),
+                price=product.price * item_data.get('quantity'),
+                image=product.image
+            )
+        return Response(solped_serializer.data, status=status.HTTP_201_CREATED)
     else:
         return Response(solped_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
