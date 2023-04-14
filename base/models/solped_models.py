@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models.functions import Cos
 
 from ..models import *
 
@@ -24,6 +23,14 @@ priority_level_CHOICES = (
     (3, 'Baja')
 )
 
+status_CHOICES = (
+    (1, 'Creada'),
+    (2, 'Autorizada'),
+    (3, 'Cancelada'),
+    (4, 'En proceso'),
+    (5, 'Finalizada')
+)
+
 
 class Solped(models.Model):
     creator_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='creador')
@@ -33,11 +40,11 @@ class Solped(models.Model):
     resolution_deadline = models.DateField()
     total_price = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
     createdAt = models.DateTimeField(auto_now_add=True)
-    is_authorized = models.BooleanField(default=False)
     authorization_date = models.DateTimeField(auto_now_add=False, null=True, blank=True)
     priority_level = models.TextField(choices=priority_level_CHOICES)
-    is_canceled = models.BooleanField(default=False)
+    status = models.IntegerField(choices=status_CHOICES, null=True, blank=True, default=1)
     document = models.FileField(blank=True, null=True)
+    cost_center = models.ForeignKey(CostCenter, on_delete=models.CASCADE, null=True, blank=True)
     _id = models.AutoField(primary_key=True, editable=False)
 
     def __str__(self):
@@ -51,33 +58,16 @@ class ObservationsSolped(models.Model):
     solped = models.ForeignKey(Solped, on_delete=models.CASCADE, null=True, blank=True)
 
 
+#El precio deberia ser estimado por el usuario y deberia haber precio por unidad
 class SolpedItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
     solped = models.ForeignKey(Solped, on_delete=models.SET_NULL, null=True, blank=True)
-    name = models.CharField(max_length=200, null=True, blank=True)
     quantity = models.IntegerField(null=True, blank=True, default=0)
-    price = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
-    image = models.CharField(max_length=200, null=True, blank=True)
+    price = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
     _id = models.AutoField(primary_key=True, editable=False)
 
     def __str__(self):
         return str(self.name)
-
-
-class ShippingAddress(models.Model):
-    solped = models.OneToOneField(
-        Solped, on_delete=models.CASCADE)
-    address = models.CharField(max_length=200, null=True, blank=True)
-    city = models.CharField(max_length=200, null=True, blank=True)
-    postal_code = models.CharField(max_length=200, null=True, blank=True)
-    country = models.CharField(max_length=200, null=True, blank=True)
-    shipping_price = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
-    _id = models.AutoField(primary_key=True, editable=False)
-    identification_card = models.CharField(max_length=10, null=True, blank=True, db_column='cedula')
-    phone_number = models.CharField(max_length=15, null=True, blank=True)
-
-    def __str__(self):
-        return str(self.address)
 
 
 class Offer(models.Model):
@@ -88,7 +78,7 @@ class Offer(models.Model):
     totalPrice = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
     delivery_time = models.DateTimeField(auto_now_add=False, null=True, blank=True)
     warranty = models.TextField(null=True, blank=True)
-    marca = models.CharField(max_length=200, null=True, blank=True)
+    brand = models.CharField(max_length=200, null=True, blank=True)
     _id = models.AutoField(primary_key=True, editable=False)
 
     def __str__(self):

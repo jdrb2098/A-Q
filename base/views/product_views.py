@@ -221,12 +221,13 @@ def get_product(request, pk):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated, IsAdminUser])
+@permission_classes([])
+#@permission_classes([IsAuthenticated, IsAdminUser])
 def create_product(request):
-    user_email = request.user
-    user = User.objects.get(email=user_email)
-    enterprise = Enterprise.objects.get(pk=user.enterprise.pk)
-    if enterprise.name == "AQ":
+    #user_email = request.user
+    #user = User.objects.get(email=user_email)
+    #enterprise = Enterprise.objects.get(pk=user.enterprise.pk)
+    #if enterprise.name != "AQ":
         name = request.data.get('name')
         category = get_object_or_404(Category, pk=request.data.get('category'))
         sub_category = get_object_or_404(SubCategory, pk=request.data.get('subcategory'))
@@ -236,12 +237,14 @@ def create_product(request):
             name=name,
             category=category,
             sub_category=sub_category,
-            price=request.data.get('price'),
             brand=request.data.get('brand'),
             description=request.data.get('description'),
+            is_service=request.data.get('is_service', False),
+            is_good=request.data.get('is_good', False),
             image=request.data.get('image'),
-            unit_price=request.data.get('unit_price'),
+            price=request.data.get('price'),
             quantity=request.data.get('quantity'),
+            unit_price=request.data.get('price') / request.data.get('quantity'),
             reference_code=f"{category.reference_code}{sub_category.reference_code}{serial}"
         )
 
