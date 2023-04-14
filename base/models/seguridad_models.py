@@ -20,9 +20,17 @@ class Enterprise(models.Model):
     def __str__(self):
         return self.name
 
+class Areas(models.Model):
+    name = models.CharField(max_length=200, null=True, blank=True)
+    enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE, null=True, blank=True)
+    _id = models.AutoField(primary_key=True, editable=False)
+
+    def __str__(self):
+        return self.name
 
 class User(AbstractBaseUser, PermissionsMixin):
     enterprise = models.OneToOneField(Enterprise, on_delete=models.SET_NULL, null=True)
+    area = models.ForeignKey(Areas, on_delete=models.SET_NULL, null=True)
     email = models.EmailField(unique=True, db_column='TzemailUsuario')
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -40,8 +48,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
 
+
+# Para que un cliente quiera comprar es necesario que le autorizen el uso del dinero?
 class CostCenter(models.Model):
     name = models.CharField(max_length=250)
-    enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE)
+    area = models.ForeignKey(Areas, on_delete=models.CASCADE, null=True)
     budget = models.DecimalField(max_digits=11, decimal_places=2, null=True, blank=True)
     request_authorizer = models.ForeignKey(User, on_delete=models.CASCADE)
