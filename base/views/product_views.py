@@ -1,3 +1,4 @@
+from django.views.decorators.csrf import csrf_exempt
 from unicodedata import category
 from django.shortcuts import render
 from django.db.models import Q
@@ -10,6 +11,7 @@ from django.shortcuts import get_object_or_404
 from base.serializers import ProductSerializer, CategorySerializer, SubCategorySerializer
 from rest_framework import status
 from base.models import *
+import openpyxl
 
 
 """ Categorias """
@@ -242,9 +244,6 @@ def create_product(request):
             is_service=request.data.get('is_service', False),
             is_good=request.data.get('is_good', False),
             image=request.data.get('image'),
-            price=request.data.get('price'),
-            quantity=request.data.get('quantity'),
-            unit_price=request.data.get('price') / request.data.get('quantity'),
             reference_code=f"{category.reference_code}{sub_category.reference_code}{serial}"
         )
 
@@ -268,7 +267,6 @@ def update_product(request, pk):
         return Response({'message': 'El producto no existe'}, status=status.HTTP_404_NOT_FOUND)
 
 
-
 @api_view(['DELETE'])
 @permission_classes([])
 def delete_product(request, pk):
@@ -278,6 +276,53 @@ def delete_product(request, pk):
         return Response({'message': 'Producto eliminado exitosamente'}, status=status.HTTP_204_NO_CONTENT)
     except Product.DoesNotExist:
         return Response({'message': 'El producto no existe'}, status=status.HTTP_404_NOT_FOUND)
+
+
+# Toca definir el formato de texto de las categorias y subcategorias
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([])
+def import_products_excel(request):
+    try:
+        file = request.FILES['file']
+        if not file.name.endswith('xlsx'):
+            return Response({'error': 'El archivo no es un archivo de Excel'}, status=status.HTTP_400_BAD_REQUEST)
+        workbook = openpyxl.load_workbook(file)
+        worksheet = workbook.active
+        num = 0
+        for row in worksheet.iter_rows(min_row=2):
+            if not all(cell.value is None for cell in row):
+                name = row[0].value
+                image = row[1].value
+                brand = row[2].value
+                category = row[3].value
+                sub_category = row[4].value
+                description = row[5].value
+                reference_code = row[6].value
+                measure = row[7].value
+                is_good = row[8].value
+                is_service = row[9].value
+
+                category = category.replace('_', ' ')
+                category = Category.objects.get(name=category)
+                sub_category = SubCategory.objects.get(name=sub_category)
+                #measure = MeasurementUnits.objects.get(name=measure)
+
+                Product.objects.create(
+                    name=name,
+                    image=image,
+                    brand=brand,
+                    category=category,
+                    sub_category=sub_category,
+                    description=description,
+                    #measurement_unit=measure,
+                    reference_code=category.reference_code + sub_category.reference_code + reference_code,
+                    is_good=True if is_good == 'Si' else False,
+                    is_service=True if is_service == 'Si' else False,
+                )
+        return Response({'message': 'Productos importados exitosamente'}, status=status.HTTP_201_CREATED)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 """

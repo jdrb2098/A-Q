@@ -86,3 +86,9 @@ class SolpedItemsSerializer(serializers.ModelSerializer):
     class Meta:
         model = SolpedItem
         fields = '__all__'
+
+
+class ObservationsSolpedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ObservationsSolped
+        fields = '__all__'
