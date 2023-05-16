@@ -33,7 +33,6 @@ status_CHOICES = (
 )
 
 
-# Cuantos documentos se pueden subir por solped? o se puede subir un documento o mas por items del solped?
 class Solped(models.Model):
     creator_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='creador')
     description = models.TextField()
@@ -46,7 +45,6 @@ class Solped(models.Model):
     authorization_date = models.DateTimeField(auto_now_add=False, null=True, blank=True)
     priority_level = models.TextField(choices=priority_level_CHOICES)
     status = models.IntegerField(choices=status_CHOICES, null=True, blank=True, default=1)
-    document = models.FileField(blank=True, null=True)
     cost_center = models.ForeignKey(CostCenter, on_delete=models.CASCADE, null=True, blank=True)
     _id = models.AutoField(primary_key=True, editable=False)
 
@@ -75,40 +73,48 @@ class SolpedItem(models.Model):
         return str(self.name)
 
 
-# Si se hace la oferta en excel y se quiere guardar para que se pueda comparar es necesario crear un modelo para la
-# interrelacion de ofertas y productos si no se quiere guardar al final esa oferta se debe guardar los precios de los
-# productos en el historial de compras
+class Document(models.Model):
+    document = models.FileField(blank=True, null=True)
+    _id = models.AutoField(primary_key=True, editable=False)
 
-# Si se hace la oferta mediante la aplicacion se debe guardar si o si el precio de cada producto en esa interrelacion,
 
-# Si la info se guarda en esa interrelacion, los precios de los productos de la oferta seleccionada
-# se debe guardar en el historial de compras y el resto de ofertas se deben eliminar
+class SolpedItemDocument(models.Model):
+    solped_item = models.ForeignKey(SolpedItem, on_delete=models.CASCADE, null=True, blank=True)
+    document = models.ForeignKey(Document, on_delete=models.CASCADE, null=True, blank=True)
+    _id = models.AutoField(primary_key=True, editable=False)
+
+
+# Se puede cargar con un excel o con un formulario
+# El comprador puede visualizar todas las ofertas de una solped juntas en un excel
 class Offer(models.Model):
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     solped = models.OneToOneField(Solped, on_delete=models.CASCADE, null=True)
     tax_price = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
     shipping_price = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
-    totalPrice = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
+    total_price = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
     delivery_time = models.DateTimeField(auto_now_add=False, null=True, blank=True)
     warranty = models.TextField(null=True, blank=True)
-    # brand = models.CharField(max_length=200, null=True, blank=True)  Se supone que la marca deeb ser la misma que se pidio
+    is_selected = models.BooleanField(default=False) # Se agrega esto y se borra el historial de compra
     _id = models.AutoField(primary_key=True, editable=False)
 
     def __str__(self):
         return str(self.createdAt)
 
 
-class PurchaseHistory(models.Model):
+class OfferItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
-    # material_name = models.CharField(max_length=255) esto ya lo tiene el producto
-    # material_code = models.CharField(max_length=50) esta tambien
-    supplier = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    offer = models.ForeignKey(Offer, on_delete=models.SET_NULL, null=True, blank=True)
+    price = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
     unit_price = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
-    quantity = models.IntegerField(null=True, blank=True, default=0)
-    total_price = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
+    new_brand = models.CharField(max_length=255, null=True, blank=True)
+    _id = models.AutoField(primary_key=True, editable=False)
+
+    def __str__(self):
+        return str(self.name)
 
 
-class SuppliersEvent(models.Model):
+class Event(models.Model):
+    _id = models.AutoField(primary_key=True, editable=False)
     event_title = models.CharField(max_length=255)
     description = models.TextField()
     view_document = models.BooleanField(default=True)
@@ -121,6 +127,8 @@ class SuppliersEvent(models.Model):
     end_date = models.DateTimeField()
 
 
-class PrivateEvent(models.Model):
-    event = models.ForeignKey(SuppliersEvent, on_delete=models.SET_NULL, null=True, blank=True)
+#
+class SuppliersEvent(models.Model):
+    _id = models.AutoField(primary_key=True, editable=False)
+    event = models.ForeignKey(Event, on_delete=models.SET_NULL, null=True, blank=True)
     supplier = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)

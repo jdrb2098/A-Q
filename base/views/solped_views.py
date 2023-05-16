@@ -126,15 +126,6 @@ def update_solped_items(request, pk):
             return Response(solped_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-# Deberian estar todas las observaciones o solo la ultima? bien
-# Quien es el comprador? La persona que creo la solped o la persona que la aprobo?
-# El almacen es de los clientes o de la empresa?
-# Que es el documento?
-# Si no hay observaciones, que se debe mostrar?
-# El valor total es el valor de la solped o el de los items? (esNC)
-# Cual formato de fecha se debe usar?
-# El almacen es el nombre de la bodega?
 @api_view(['GET'])
 @permission_classes([])
 def get_solped_excel(request, pk):
@@ -258,3 +249,16 @@ def create_observation(request):
         return Response(observation_solped_serializer.data, status=status.HTTP_201_CREATED)
     else:
         return Response({'error': 'No tiene permisos para realizar esta accion'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['GET'])
+@permission_classes([])
+def get_solpeds_by_user(request, pk):
+    solpeds = Solped.objects.filter(creator_user=pk)
+    if solpeds is None:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    else:
+        solpeds_serializer = SolpedSerializer(solpeds, many=True)
+        return Response(solpeds_serializer.data, status=status.HTTP_200_OK)
+
+

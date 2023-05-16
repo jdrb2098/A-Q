@@ -158,8 +158,6 @@ def filter_subcategories(request, pk):
         return Response({"message": "No se encontraron subcategorías para la categoría especificada"}, status=status.HTTP_404_NOT_FOUND)
 
 
-
-
 """ Productos """
 
 
@@ -253,6 +251,32 @@ def create_product(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+@api_view(['POST'])
+@permission_classes([])
+def create_products(request):
+    products = request.data.get('products')
+    for product in products:
+        name = product.get('name')
+        category = get_object_or_404(Category, pk=product.get('category'))
+        sub_category = get_object_or_404(SubCategory, pk=product.get('subcategory'))
+        serial = product.get('serial')
+
+        product = Product.objects.create(
+            name=name,
+            category=category,
+            sub_category=sub_category,
+            brand=product.get('brand'),
+            description=product.get('description'),
+            is_service=product.get('is_service', False),
+            is_good=product.get('is_good', False),
+            image=product.get('image'),
+            reference_code=f"{category.reference_code}{sub_category.reference_code}{serial}"
+        )
+
+        if product is None:
+            return Response({'error': 'No se pudo crear el producto'}, status=status.HTTP_400_BAD_REQUEST)
+    return Response({'message': 'Productos Creados'}, status=status.HTTP_201_CREATED)
+
 @api_view(['PUT'])
 @permission_classes([])
 def update_product(request, pk):
@@ -278,7 +302,8 @@ def delete_product(request, pk):
         return Response({'message': 'El producto no existe'}, status=status.HTTP_404_NOT_FOUND)
 
 
-# Toca definir el formato de texto de las categorias y subcategorias
+# Se va a definir el formato de texto de las categorias y subcategorias?
+# Como es el flujo para crear varios productos?
 @csrf_exempt
 @api_view(['POST'])
 @permission_classes([])
@@ -290,6 +315,7 @@ def import_products_excel(request):
         workbook = openpyxl.load_workbook(file)
         worksheet = workbook.active
         num = 0
+        products_ids = []
         for row in worksheet.iter_rows(min_row=2):
             if not all(cell.value is None for cell in row):
                 name = row[0].value
@@ -308,7 +334,7 @@ def import_products_excel(request):
                 sub_category = SubCategory.objects.get(name=sub_category)
                 #measure = MeasurementUnits.objects.get(name=measure)
 
-                Product.objects.create(
+                product = Product.objects.create(
                     name=name,
                     image=image,
                     brand=brand,
@@ -320,7 +346,8 @@ def import_products_excel(request):
                     is_good=True if is_good == 'Si' else False,
                     is_service=True if is_service == 'Si' else False,
                 )
-        return Response({'message': 'Productos importados exitosamente'}, status=status.HTTP_201_CREATED)
+
+        return Response({'message': 'Productos importados correctamente'}, status=status.HTTP_201_CREATED)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
