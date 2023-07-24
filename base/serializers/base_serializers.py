@@ -76,7 +76,36 @@ class CategoryProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+status_CHOICES = (
+    (1, 'Solped Generada'),
+    (2, 'Autorizada'),
+    (3, 'Cancelada'),
+    (4, 'Cotizado'),
+    (5, 'Aprobada'),
+    (6, 'ODC Generada')
+)
+
 class SolpedSerializer(serializers.ModelSerializer):
+    status_name = serializers.SerializerMethodField()
+    priority_name = serializers.SerializerMethodField()
+    def get_status_name(self, obj):
+        status_choices = {
+            1: 'Solped Generada',
+            2: 'Autorizada',
+            3: 'Cotizada',
+            4: 'Aprobada',
+            5: 'ODC Generada',
+            9: 'Cancelada',
+        }
+        return status_choices.get(obj.status)
+
+    def get_priority_name(self, obj):
+        priority_level_CHOICES = {
+            1: 'Alta',
+            2: 'Media',
+            3: 'Baja'
+        }
+        return priority_level_CHOICES.get(obj.priority_level)
     class Meta:
         model = Solped
         fields = '__all__'

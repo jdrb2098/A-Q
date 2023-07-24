@@ -13,5 +13,6 @@ urlpatterns = [
     path('get-solped-excel/<str:pk>/', views.get_solped_excel, name="get-solped-excel"),
     path('authorization-solped/<str:pk>/', views.authorization_solped, name="authorization-solped"),
     path('create-observation/', views.create_observation, name="create-observation"),
+    path('get-solpeds-user/<str:pk>/', views.get_solpeds_by_user, name="get-solpeds-user"),
 
 ]

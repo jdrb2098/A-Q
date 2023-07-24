@@ -43,6 +43,9 @@ class Solped(models.Model):
     total_price = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
     createdAt = models.DateTimeField(auto_now_add=True)
     authorization_date = models.DateTimeField(auto_now_add=False, null=True, blank=True)
+    quote_date = models.DateTimeField(auto_now_add=False, null=True, blank=True)
+    approval_date = models.DateTimeField(auto_now_add=False, null=True, blank=True)
+    odc_date = models.DateTimeField(auto_now_add=False, null=True, blank=True)
     priority_level = models.TextField(choices=priority_level_CHOICES)
     status = models.IntegerField(choices=status_CHOICES, null=True, blank=True, default=1)
     cost_center = models.ForeignKey(CostCenter, on_delete=models.CASCADE, null=True, blank=True)
@@ -94,7 +97,8 @@ class Offer(models.Model):
     total_price = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
     delivery_time = models.DateTimeField(auto_now_add=False, null=True, blank=True)
     warranty = models.TextField(null=True, blank=True)
-    is_selected = models.BooleanField(default=False) # Se agrega esto y se borra el historial de compra
+    is_selected = models.BooleanField(default=False)
+    selected_date = models.DateTimeField(auto_now_add=False, null=True, blank=True)
     _id = models.AutoField(primary_key=True, editable=False)
 
     def __str__(self):
