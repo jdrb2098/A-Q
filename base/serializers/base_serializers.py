@@ -76,15 +76,6 @@ class CategoryProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-status_CHOICES = (
-    (1, 'Solped Generada'),
-    (2, 'Autorizada'),
-    (3, 'Cancelada'),
-    (4, 'Cotizado'),
-    (5, 'Aprobada'),
-    (6, 'ODC Generada')
-)
-
 class SolpedSerializer(serializers.ModelSerializer):
     status_name = serializers.SerializerMethodField()
     priority_name = serializers.SerializerMethodField()
