@@ -202,5 +202,15 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'base.User'
 
+AWS_QUERYSTRING_AUTH = False
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+#AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+#AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+AWS_ACCESS_KEY_ID = "AKIAQ4KA5P5QPF5BED5Y"
+AWS_SECRET_ACCESS_KEY = "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"
+
+AWS_STORAGE_BUCKET_NAME = 'file-bucket-aq'
+
 if os.getcwd() == '/app':
     DEBUG = False

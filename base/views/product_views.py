@@ -352,7 +352,7 @@ def import_products_excel(request):
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-"""
+@permission_classes([])
 @api_view(['POST'])
 def upload_image(request):
     data = request.data
@@ -366,7 +366,7 @@ def upload_image(request):
     return Response('Image was uploaded')
 
 
-
+"""
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_product_review(request, pk):
