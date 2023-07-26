@@ -19,7 +19,8 @@ urlpatterns = [
     path('update-product/<str:pk>/', views.update_product, name="update-product"),
     path('delete-product/<str:pk>/', views.delete_product, name="delete-product"),
     path('import-products-excel/', views.import_products_excel, name='import_products_excel'),
+    path('get-products-filtered/', views.get_products_filtered, name='get-products-filtered'),
     path('', views.get_products, name="products"),
     path('<str:pk>/', views.get_product, name="product"),
-    
+
 ]

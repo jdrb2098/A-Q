@@ -203,6 +203,26 @@ def get_products(request):
 
 @api_view(['GET'])
 @permission_classes([])
+def get_products_filtered(request):
+    search_query = request.GET.get('q', '')
+
+    if search_query:
+        # Filtrar los productos que tengan partes que coincidan en el reference_code o el name
+        products = Product.objects.filter(
+            Q(reference_code__icontains=search_query) | Q(name__icontains=search_query)
+        )
+    else:
+        products = Product.objects.all()
+
+    if not products:
+        return Response({'error': 'No se encontraron productos'}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = ProductSerializer(products, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([])
 def get_top_products(request):
     products = Product.objects.filter(rating__gte=4).order_by('-rating')[0:5]
     serializer = ProductSerializer(products, many=True)
