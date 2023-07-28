@@ -14,5 +14,7 @@ urlpatterns = [
     path('authorization-solped/<str:pk>/', views.authorization_solped, name="authorization-solped"),
     path('create-observation/', views.create_observation, name="create-observation"),
     path('get-solpeds-user/<str:pk>/', views.get_solpeds_by_user, name="get-solpeds-user"),
-
+    path('get-item-document/<str:pk>/', views.get_documents_for_item, name='get-documents-for-item'),
+    path('get-solped-items-document/<str:pk>/', views.get_documents_for_solped, name='get_documents_for_solped'),
+    path('upload-document-item/<str:pk>/', views.upload_document_item, name='upload-document-item'),
 ]

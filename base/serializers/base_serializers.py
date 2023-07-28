@@ -1,7 +1,7 @@
 from dataclasses import fields
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
-from ..models import Product, Solped, SolpedItem, ShippingAddress, Enterprise, User, Category, SubCategory, MeasurementUnits, Warehouse, CostCenter, SuppliersEvent, ObservationsSolped, Event
+from ..models import Product, Solped, SolpedItem, ShippingAddress, Enterprise, User, Category, SubCategory, MeasurementUnits, Warehouse, CostCenter, SuppliersEvent, ObservationsSolped, Event, Document
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -75,6 +75,11 @@ class CategoryProductSerializer(serializers.ModelSerializer):
         model = SubCategory
         fields = '__all__'
 
+class DocumentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Document
+        fields = '__all__'
+
 
 class SolpedSerializer(serializers.ModelSerializer):
     status_name = serializers.SerializerMethodField()
@@ -103,6 +108,8 @@ class SolpedSerializer(serializers.ModelSerializer):
 
 
 class SolpedItemsSerializer(serializers.ModelSerializer):
+    product = ProductSerializer()
+    documents = DocumentSerializer(source='document_set', many=True, read_only=True)
     class Meta:
         model = SolpedItem
         fields = '__all__'

@@ -52,7 +52,7 @@ class Solped(models.Model):
     _id = models.AutoField(primary_key=True, editable=False)
 
     def __str__(self):
-        return str(self.createdAt)
+        return str(self._id)
 
 
 class ObservationsSolped(models.Model):
@@ -73,17 +73,13 @@ class SolpedItem(models.Model):
     _id = models.AutoField(primary_key=True, editable=False)
 
     def __str__(self):
-        return str(self.name)
+        return str(self._id)
 
 
 class Document(models.Model):
-    document = models.FileField(blank=True, null=True)
-    _id = models.AutoField(primary_key=True, editable=False)
-
-
-class SolpedItemDocument(models.Model):
     solped_item = models.ForeignKey(SolpedItem, on_delete=models.CASCADE, null=True, blank=True)
-    document = models.ForeignKey(Document, on_delete=models.CASCADE, null=True, blank=True)
+    solped = models.ForeignKey(Solped, on_delete=models.CASCADE, null=True, blank=True)
+    document = models.FileField(blank=True, null=True)
     _id = models.AutoField(primary_key=True, editable=False)
 
 

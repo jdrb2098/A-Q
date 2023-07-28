@@ -16,6 +16,7 @@ admin.site.register(Offer)
 admin.site.register(ShippingAddress)
 admin.site.register(Category)
 admin.site.register(SubCategory)
+admin.site.register(Document)
 
 
 

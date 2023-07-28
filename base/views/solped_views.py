@@ -1,5 +1,5 @@
-from base.models import Solped, SolpedItem, Product, ObservationsSolped, Category, User, Warehouse, ShippingAddress
-from base.serializers import SolpedSerializer, SolpedItemsSerializer, ObservationsSolpedSerializer, ProductSerializer
+from base.models import Solped, SolpedItem, Product, ObservationsSolped, Category, User, Warehouse, ShippingAddress, Document
+from base.serializers import SolpedSerializer, SolpedItemsSerializer, ObservationsSolpedSerializer, ProductSerializer, DocumentSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -262,3 +262,39 @@ def get_solpeds_by_user(request, pk):
         return Response(solpeds_serializer.data, status=status.HTTP_200_OK)
 
 
+#Se pide el id del producto de la solped
+@api_view(['GET'])
+@permission_classes([])
+def get_documents_for_item(request, pk):
+    solped_item_documents = Document.objects.filter(solped_item=pk)
+    document_serializer = DocumentSerializer(solped_item_documents, many=True)
+    return Response(document_serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([])
+def get_documents_for_solped(request, pk):
+    try:
+        solped_item_documents = Document.objects.filter(solped=pk)
+        document_serializer = DocumentSerializer(solped_item_documents, many=True)
+
+        data = {'documents': document_serializer.data}
+        return Response(data, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'error': 'Error retrieving documents'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@permission_classes([])
+def upload_document_item(request, pk):
+    # Obtener el archivo del formulario enviado en la solicitud
+    file = request.FILES.get('file', None)
+    if not file:
+        return Response({'error': 'No se proporcionó ningún archivo.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Asociar el documento con el solped_item especificado en la solicitud
+    solped_item = SolpedItem.objects.get(pk=pk)
+    solped = Solped.objects.get(pk=solped_item.solped.pk)
+    Document.objects.create(solped_item=solped_item, document=file, solped=solped)
+
+    return Response({'message': 'Archivo guardado exitosamente.'}, status=status.HTTP_201_CREATED)
