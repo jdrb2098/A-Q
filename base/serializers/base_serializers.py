@@ -91,7 +91,12 @@ class SolpedSerializer(serializers.ModelSerializer):
             3: 'Cotizada',
             4: 'Aprobada',
             5: 'ODC Generada',
-            9: 'Cancelada',
+            6: 'En Proveedor',
+            7: 'Liberar ODC',
+            8: 'Facturada',
+            9 : 'Finalizar ODC',
+            10: 'Cancelada',
+            11: 'Retorno a Solped'
         }
         return status_choices.get(obj.status)
 
