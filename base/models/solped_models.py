@@ -26,10 +26,15 @@ priority_level_CHOICES = (
 status_CHOICES = (
     (1, 'Solped Generada'),
     (2, 'Autorizada'),
-    (3, 'Cancelada'),
-    (4, 'Cotizado'),
-    (5, 'Aprobada'),
-    (6, 'ODC Generada')
+    (3, 'Cotizado'),
+    (4, 'Aprobada'),
+    (5, 'ODC Generada'),
+    (6, 'En Proveedor'),
+    (7, 'Liberar ODC'),
+    (8, 'Facturada'),
+    (9, 'Finalizar ODC'),
+    (10, 'Cancelada'),
+    (11, 'Retorno a Solped'),
 )
 
 
@@ -46,6 +51,10 @@ class Solped(models.Model):
     quote_date = models.DateTimeField(auto_now_add=False, null=True, blank=True)
     approval_date = models.DateTimeField(auto_now_add=False, null=True, blank=True)
     odc_date = models.DateTimeField(auto_now_add=False, null=True, blank=True)
+    supplier_date = models.DateTimeField(auto_now_add=False, null=True, blank=True)
+    release_date = models.DateTimeField(auto_now_add=False, null=True, blank=True)
+    bill_date = models.DateTimeField(auto_now_add=False, null=True, blank=True)
+    finish_date = models.DateTimeField(auto_now_add=False, null=True, blank=True)
     priority_level = models.TextField(choices=priority_level_CHOICES)
     status = models.IntegerField(choices=status_CHOICES, null=True, blank=True, default=1)
     cost_center = models.ForeignKey(CostCenter, on_delete=models.CASCADE, null=True, blank=True)

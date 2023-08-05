@@ -94,7 +94,7 @@ class SolpedSerializer(serializers.ModelSerializer):
             6: 'En Proveedor',
             7: 'Liberar ODC',
             8: 'Facturada',
-            9 : 'Finalizar ODC',
+            9: 'Finalizar ODC',
             10: 'Cancelada',
             11: 'Retorno a Solped'
         }

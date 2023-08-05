@@ -226,6 +226,7 @@ def authorization_solped(request, pk):
     if request.user != solped.assigned_negotiator:
         return Response({'error': 'No tiene permisos para realizar esta accion'}, status=status.HTTP_401_UNAUTHORIZED)
     solped.authorization_date = datetime.now()
+    solped.status = 2
     solped_serializer = SolpedSerializer(solped, data=request.data, partial=True)
     if solped_serializer.is_valid():
         solped_serializer.save()

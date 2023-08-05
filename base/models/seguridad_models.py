@@ -12,6 +12,9 @@ class Enterprise(models.Model):
     image = models.ImageField(null=True, blank=True, default='/placeholder.png')
     description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    high_priority_day = models.IntegerField(null=True, blank=True)
+    medium_priority_day = models.IntegerField(null=True, blank=True)
+    low_priority_day = models.IntegerField(null=True, blank=True)
     _id = models.AutoField(primary_key=True, editable=False)
 
     def __str__(self):
