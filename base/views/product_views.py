@@ -335,7 +335,7 @@ def import_products_excel(request):
         workbook = openpyxl.load_workbook(file)
         worksheet = workbook.active
         num = 0
-        products_ids = []
+        products = []
         for row in worksheet.iter_rows(min_row=2):
             if not all(cell.value is None for cell in row):
                 name = row[0].value
@@ -366,24 +366,25 @@ def import_products_excel(request):
                     is_good=True if is_good == 'Si' else False,
                     is_service=True if is_service == 'Si' else False,
                 )
+                products.append(product)
 
-        return Response({'message': 'Productos importados correctamente'}, status=status.HTTP_201_CREATED)
+        products_serializer = ProductSerializer(products, many=True)
+        return Response({'message': 'Productos importados correctamente', 'products': products_serializer.data}, status=status.HTTP_201_CREATED)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-@permission_classes([])
 @api_view(['POST'])
-def upload_image(request):
-    data = request.data
-
-    product_id = data['product_id']
-    product = Product.objects.get(_id=product_id)
-
+@permission_classes([])
+def upload_image(request, pk):
+    product = Product.objects.get(pk=pk)
     product.image = request.FILES.get('image')
     product.save()
 
-    return Response('Image was uploaded')
+    # Construir la URL de la imagen usando la información del campo ImageField
+    image_url = request.build_absolute_uri(product.image.url)
+
+    return Response({'image_url': image_url})
 
 
 """

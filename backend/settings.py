@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-4jm5$w0jw6dex4j)&apob+z#kqy)88v=66o4+5qdj(rp+cyc90
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -59,7 +59,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
-    )
+    ),
 }
 
 
@@ -193,6 +193,7 @@ MEDIA_ROOT = BASE_DIR / 'static/images'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
@@ -214,3 +215,5 @@ AWS_STORAGE_BUCKET_NAME = 'file-bucket-aq'
 
 if os.getcwd() == '/app':
     DEBUG = False
+
+

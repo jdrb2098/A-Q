@@ -8,7 +8,10 @@ import openpyxl
 from django.http import HttpResponse
 from ..models.solped_models import status_CHOICES
 from datetime import datetime
-
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+from django.core.paginator import Paginator
+from django.db.models.functions import Cast
+from django.db.models import DateTimeField
 
 @api_view(['POST'])
 @permission_classes([])
@@ -18,7 +21,7 @@ def create_solped(request):
     solped_serializer = SolpedSerializer(data=request.data, partial=True)
     if solped_serializer.is_valid():
         #solped = solped_serializer.save(creator_user=request.user)
-        solped = solped_serializer.save(creator_user=User.objects.get(pk=1))
+        solped = solped_serializer.save(creator_user=User.objects.get(pk=request.user.pk))
         # Crear items
         items_data = request.data.get('items')
         for item_data in items_data:
@@ -252,15 +255,131 @@ def create_observation(request):
         return Response({'error': 'No tiene permisos para realizar esta accion'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
+from rest_framework.pagination import PageNumberPagination
+
 @api_view(['GET'])
-@permission_classes([])
-def get_solpeds_by_user(request, pk):
-    solpeds = Solped.objects.filter(creator_user=pk)
+@permission_classes([IsAuthenticated])
+def get_solpeds_by_user(request):
+
+    filter_params = request.query_params
+    solpeds = Solped.objects.filter(creator_user=request.user.pk, status__lt=6)
+
     if solpeds is None:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    else:
-        solpeds_serializer = SolpedSerializer(solpeds, many=True)
-        return Response(solpeds_serializer.data, status=status.HTTP_200_OK)
+
+    if 'order' in filter_params:
+        order_by = filter_params['order']
+        if order_by == 'fecha_creacion':
+            solpeds = solpeds.order_by('createdAt')
+        elif order_by == 'numero_solped':
+            solpeds = solpeds.order_by('_id')
+        elif order_by == 'precio_total':
+            solpeds = solpeds.order_by('total_price')
+        elif order_by == 'fecha_resolucion':
+            solpeds = solpeds.order_by('resolution_deadline')
+        elif order_by == 'estado':
+            solpeds = solpeds.order_by('status')
+        else:
+            solpeds = solpeds.order_by('createdAt')
+
+    if filter_params['type'] and filter_params['input']:
+        type_filter = filter_params['type']
+        input_filter = filter_params['input']
+
+        if type_filter == 'numero_solped':
+            solpeds = solpeds.filter(_id__contains=input_filter) #works
+        elif type_filter == 'codigo_material':
+            solpeds = solpeds.filter(solpeditem__product__reference_code__exact=input_filter) #works
+        elif type_filter == 'usuario_creador':
+            solpeds = solpeds.filter(creator_user=input_filter) # filtrar por nombre
+        elif type_filter == 'ubicacion':
+            solpeds = solpeds.filter()
+        elif type_filter == 'fecha_creacion':
+            input_date = datetime.strptime(input_filter, '%Y-%m-%d')
+            input_year = input_date.year
+            input_month = input_date.month
+            input_day = input_date.day
+            solpeds = solpeds.filter(createdAt__year=input_year, createdAt__month=input_month, createdAt__day=input_day)
+        elif type_filter == 'centro_costos':
+            solpeds = solpeds.filter()
+        elif type_filter == 'estado':
+            solpeds = solpeds.filter(status=int(input_filter))
+
+    # Aplicar paginación
+    paginator = PageNumberPagination()
+    paginator.page_size =4  # Número de elementos por página
+    result_page = paginator.paginate_queryset(solpeds, request)
+
+    solpeds_serializer = SolpedSerializer(result_page, many=True)
+    return paginator.get_paginated_response({'solpeds': solpeds_serializer.data, 'pages': paginator.page.paginator.num_pages})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_odc_by_user(request):
+    filter_params = request.query_params
+
+    solpeds = Solped.objects.filter(creator_user=request.user.pk, status__gt=4)
+
+    if solpeds is None:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if 'order' in filter_params:
+        order_by = filter_params['order']
+        if order_by == 'fecha_creacion':
+            solpeds = solpeds.order_by('createdAt')
+        elif order_by == 'numero_solped':
+            solpeds = solpeds.order_by('_id')
+        elif order_by == 'precio_total':
+            solpeds = solpeds.order_by('total_price')
+        elif order_by == 'fecha_resolucion':
+            solpeds = solpeds.order_by('resolution_deadline')
+        elif order_by == 'estado':
+            solpeds = solpeds.order_by('status')
+        else:
+            solpeds = solpeds.order_by('createdAt')
+
+
+    if filter_params['type'] and filter_params['input']:
+        type_filter = filter_params['type']
+        input_filter = filter_params['input']
+
+        if type_filter == 'numero_solped':
+            solpeds = solpeds.filter(_id__contains=input_filter) #works
+        elif type_filter == 'codigo_material':
+            solpeds = solpeds.filter(solpeditem__product__reference_code__exact=input_filter) #works
+        elif type_filter == 'usuario_creador':
+            solpeds = solpeds.filter(creator_user=input_filter) # filtrar por nombre
+        elif type_filter == 'ubicacion':
+            solpeds = solpeds.filter()
+        elif type_filter == 'fecha_creacion':
+            input_date = datetime.strptime(input_filter, '%Y-%m-%d')
+            input_year = input_date.year
+            input_month = input_date.month
+            input_day = input_date.day
+            solpeds = solpeds.filter(createdAt__year=input_year, createdAt__month=input_month, createdAt__day=input_day)
+        elif type_filter == 'centro_costos':
+            solpeds = solpeds.filter()
+        elif type_filter == 'estado':
+            solpeds = solpeds.filter(status=int(input_filter))
+
+    # Aplicar paginación
+    paginator = PageNumberPagination()
+    paginator.page_size = 10  # Número de elementos por página
+    result_page = paginator.paginate_queryset(solpeds, request)
+
+    solpeds_serializer = SolpedSerializer(result_page, many=True)
+    return paginator.get_paginated_response({'solpeds': solpeds_serializer.data, 'pages': paginator.page.paginator.num_pages})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_orders_by_user(request):
+    solpeds = Solped.objects.filter(creator_user=request.user.pk)
+    if solpeds is None:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    solpeds_serializer = SolpedSerializer(solpeds, many=True)
+    return Response(solpeds_serializer.data)
 
 
 #Se pide el id del producto de la solped
@@ -299,3 +418,5 @@ def upload_document_item(request, pk):
     Document.objects.create(solped_item=solped_item, document=file, solped=solped)
 
     return Response({'message': 'Archivo guardado exitosamente.'}, status=status.HTTP_201_CREATED)
+
+
