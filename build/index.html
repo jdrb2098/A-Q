@@ -1,1 +1,15 @@
-<h1>hola mundo</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Subir archivo Excel</title>
+</head>
+<body>
+  <h1>Subir archivo Excel</h1>
+  <form method="POST" enctype="multipart/form-data" action="/api/products/import-products-excel/">
+    {% csrf_token %}
+    <input type="file" name="file">
+    <button type="submit">Subir</button>
+  </form>
+</body>
+</html>

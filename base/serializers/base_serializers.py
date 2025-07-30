@@ -1,7 +1,7 @@
 from dataclasses import fields
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
-from ..models import Product, Solped, SolpedItem, ShippingAddress, Enterprise, User, Category, SubCategory, MeasurementUnits, Warehouse, CostCenter, SuppliersEvent, ObservationsSolped, PrivateEvent
+from ..models import Product, Solped, SolpedItem, ShippingAddress, Enterprise, User, Category, SubCategory, MeasurementUnits, Warehouse, CostCenter, SuppliersEvent, ObservationsSolped, Event, Document
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -75,14 +75,52 @@ class CategoryProductSerializer(serializers.ModelSerializer):
         model = SubCategory
         fields = '__all__'
 
+class DocumentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Document
+        fields = '__all__'
+
 
 class SolpedSerializer(serializers.ModelSerializer):
+    status_name = serializers.SerializerMethodField()
+    priority_name = serializers.SerializerMethodField()
+    def get_status_name(self, obj):
+        status_choices = {
+            1: 'Solped Generada',
+            2: 'Autorizada',
+            3: 'Cotizada',
+            4: 'Aprobada',
+            5: 'ODC Generada',
+            6: 'En Proveedor',
+            7: 'Liberar ODC',
+            8: 'Facturada',
+            9: 'Finalizar ODC',
+            10: 'Cancelada',
+            11: 'Retorno a Solped'
+        }
+        return status_choices.get(obj.status)
+
+    def get_priority_name(self, obj):
+        priority_level_CHOICES = {
+            1: 'Alta',
+            2: 'Media',
+            3: 'Baja'
+        }
+        return priority_level_CHOICES.get(obj.priority_level)
     class Meta:
         model = Solped
         fields = '__all__'
 
 
 class SolpedItemsSerializer(serializers.ModelSerializer):
+    product = ProductSerializer()
+    documents = DocumentSerializer(source='document_set', many=True, read_only=True)
     class Meta:
         model = SolpedItem
+        fields = '__all__'
+
+
+class ObservationsSolpedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ObservationsSolped
         fields = '__all__'

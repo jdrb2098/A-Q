@@ -2,6 +2,7 @@ from django.urls import path
 from base.views import product_views as views
 
 urlpatterns = [
+    path('upload/', views.upload_image, name="image-upload"),
     path('create-category/', views.create_categories, name="create-category"),
     path('categories/', views.get_categories, name="categories"),
     path('category/<str:pk>/', views.get_category, name="category"),
@@ -17,6 +18,10 @@ urlpatterns = [
     path('top-products/', views.get_top_products, name="top-products"),
     path('update-product/<str:pk>/', views.update_product, name="update-product"),
     path('delete-product/<str:pk>/', views.delete_product, name="delete-product"),
+    path('import-products-excel/', views.import_products_excel, name='import_products_excel'),
+    path('get-products-filtered/', views.get_products_filtered, name='get-products-filtered'),
+    path('upload-image/<str:pk>', views.upload_image, name='upload-image'),
     path('', views.get_products, name="products"),
     path('<str:pk>/', views.get_product, name="product"),
+
 ]

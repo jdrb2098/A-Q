@@ -59,7 +59,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
-    )
+    ),
 }
 
 
@@ -192,10 +192,7 @@ STATICFILES_DIRS = [
 MEDIA_ROOT = BASE_DIR / 'static/images'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# 🚨 Esto permite todos los orígenes CORS
 CORS_ALLOW_ALL_ORIGINS = True
-
-# ✅ Si usas cookies (autenticación por sesión), activa esto también
 CORS_ALLOW_CREDENTIALS = True
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -206,5 +203,17 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'base.User'
 
+AWS_QUERYSTRING_AUTH = False
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+#AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+#AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+AWS_ACCESS_KEY_ID = "AKIAQ4KA5P5QPF5BED5Y"
+AWS_SECRET_ACCESS_KEY = "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"
+
+AWS_STORAGE_BUCKET_NAME = 'file-bucket-aq'
+
 if os.getcwd() == '/app':
     DEBUG = False
+
+

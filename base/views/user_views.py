@@ -30,7 +30,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated, IsAdminUser])
+@permission_classes([])
 def registerUser(request):
     data = request.data
     try:
@@ -38,13 +38,15 @@ def registerUser(request):
             first_name=data['name'],
             username=data['email'],
             email=data['email'],
-            password=make_password(data['password'])
+            password=make_password(data['password']),
+            phone=data['phone'],
+            identification_card=data['identification_card'],
         )
 
         serializer = UserSerializerWithToken(user, many=False)
         return Response(serializer.data)
-    except:
-        message = {'detail': 'User with this email already exists'}
+    except Exception as e:  # Captura cualquier otra excepción y muestra el mensaje de error
+        message = {'detail': str(e)}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
 

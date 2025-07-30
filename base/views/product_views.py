@@ -1,3 +1,4 @@
+from django.views.decorators.csrf import csrf_exempt
 from unicodedata import category
 from django.shortcuts import render
 from django.db.models import Q
@@ -10,6 +11,7 @@ from django.shortcuts import get_object_or_404
 from base.serializers import ProductSerializer, CategorySerializer, SubCategorySerializer
 from rest_framework import status
 from base.models import *
+import openpyxl
 
 
 """ Categorias """
@@ -156,8 +158,6 @@ def filter_subcategories(request, pk):
         return Response({"message": "No se encontraron subcategorías para la categoría especificada"}, status=status.HTTP_404_NOT_FOUND)
 
 
-
-
 """ Productos """
 
 
@@ -203,6 +203,26 @@ def get_products(request):
 
 @api_view(['GET'])
 @permission_classes([])
+def get_products_filtered(request):
+    search_query = request.GET.get('q', '')
+
+    if search_query:
+        # Filtrar los productos que tengan partes que coincidan en el reference_code o el name
+        products = Product.objects.filter(
+            Q(reference_code__icontains=search_query) | Q(name__icontains=search_query)
+        )
+    else:
+        products = Product.objects.all()
+
+    if not products:
+        return Response({'error': 'No se encontraron productos'}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = ProductSerializer(products, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([])
 def get_top_products(request):
     products = Product.objects.filter(rating__gte=4).order_by('-rating')[0:5]
     serializer = ProductSerializer(products, many=True)
@@ -221,12 +241,13 @@ def get_product(request, pk):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated, IsAdminUser])
+@permission_classes([])
+#@permission_classes([IsAuthenticated, IsAdminUser])
 def create_product(request):
-    user_email = request.user
-    user = User.objects.get(email=user_email)
-    enterprise = Enterprise.objects.get(pk=user.enterprise.pk)
-    if enterprise.name == "AQ":
+    #user_email = request.user
+    #user = User.objects.get(email=user_email)
+    #enterprise = Enterprise.objects.get(pk=user.enterprise.pk)
+    #if enterprise.name != "AQ":
         name = request.data.get('name')
         category = get_object_or_404(Category, pk=request.data.get('category'))
         sub_category = get_object_or_404(SubCategory, pk=request.data.get('subcategory'))
@@ -236,12 +257,11 @@ def create_product(request):
             name=name,
             category=category,
             sub_category=sub_category,
-            price=request.data.get('price'),
             brand=request.data.get('brand'),
             description=request.data.get('description'),
+            is_service=request.data.get('is_service', False),
+            is_good=request.data.get('is_good', False),
             image=request.data.get('image'),
-            unit_price=request.data.get('unit_price'),
-            quantity=request.data.get('quantity'),
             reference_code=f"{category.reference_code}{sub_category.reference_code}{serial}"
         )
 
@@ -250,6 +270,32 @@ def create_product(request):
         serializer = ProductSerializer(product)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+
+@api_view(['POST'])
+@permission_classes([])
+def create_products(request):
+    products = request.data.get('products')
+    for product in products:
+        name = product.get('name')
+        category = get_object_or_404(Category, pk=product.get('category'))
+        sub_category = get_object_or_404(SubCategory, pk=product.get('subcategory'))
+        serial = product.get('serial')
+
+        product = Product.objects.create(
+            name=name,
+            category=category,
+            sub_category=sub_category,
+            brand=product.get('brand'),
+            description=product.get('description'),
+            is_service=product.get('is_service', False),
+            is_good=product.get('is_good', False),
+            image=product.get('image'),
+            reference_code=f"{category.reference_code}{sub_category.reference_code}{serial}"
+        )
+
+        if product is None:
+            return Response({'error': 'No se pudo crear el producto'}, status=status.HTTP_400_BAD_REQUEST)
+    return Response({'message': 'Productos Creados'}, status=status.HTTP_201_CREATED)
 
 @api_view(['PUT'])
 @permission_classes([])
@@ -265,7 +311,6 @@ def update_product(request, pk):
         return Response({'message': 'El producto no existe'}, status=status.HTTP_404_NOT_FOUND)
 
 
-
 @api_view(['DELETE'])
 @permission_classes([])
 def delete_product(request, pk):
@@ -277,21 +322,72 @@ def delete_product(request, pk):
         return Response({'message': 'El producto no existe'}, status=status.HTTP_404_NOT_FOUND)
 
 
-"""
+# Se va a definir el formato de texto de las categorias y subcategorias?
+# Como es el flujo para crear varios productos?
+@csrf_exempt
 @api_view(['POST'])
-def upload_image(request):
-    data = request.data
+@permission_classes([])
+def import_products_excel(request):
+    try:
+        file = request.FILES['file']
+        if not file.name.endswith('xlsx'):
+            return Response({'error': 'El archivo no es un archivo de Excel'}, status=status.HTTP_400_BAD_REQUEST)
+        workbook = openpyxl.load_workbook(file)
+        worksheet = workbook.active
+        num = 0
+        products = []
+        for row in worksheet.iter_rows(min_row=2):
+            if not all(cell.value is None for cell in row):
+                name = row[0].value
+                image = row[1].value
+                brand = row[2].value
+                category = row[3].value
+                sub_category = row[4].value
+                description = row[5].value
+                reference_code = row[6].value
+                measure = row[7].value
+                is_good = row[8].value
+                is_service = row[9].value
 
-    product_id = data['product_id']
-    product = Product.objects.get(_id=product_id)
+                category = category.replace('_', ' ')
+                category = Category.objects.get(name=category)
+                sub_category = SubCategory.objects.get(name=sub_category)
+                #measure = MeasurementUnits.objects.get(name=measure)
 
+                product = Product.objects.create(
+                    name=name,
+                    image=image,
+                    brand=brand,
+                    category=category,
+                    sub_category=sub_category,
+                    description=description,
+                    #measurement_unit=measure,
+                    reference_code=category.reference_code + sub_category.reference_code + reference_code,
+                    is_good=True if is_good == 'Si' else False,
+                    is_service=True if is_service == 'Si' else False,
+                )
+                products.append(product)
+
+        products_serializer = ProductSerializer(products, many=True)
+        return Response({'message': 'Productos importados correctamente', 'products': products_serializer.data}, status=status.HTTP_201_CREATED)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([])
+def upload_image(request, pk):
+    product = Product.objects.get(pk=pk)
     product.image = request.FILES.get('image')
     product.save()
 
-    return Response('Image was uploaded')
+    # Construir la URL de la imagen usando la información del campo ImageField
+    image_url = request.build_absolute_uri(product.image.url)
+
+    return Response({'image_url': image_url})
 
 
-
+"""
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_product_review(request, pk):
