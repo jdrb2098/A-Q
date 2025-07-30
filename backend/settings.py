@@ -141,9 +141,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': "railway",
         'USER': "postgres",
-        'PASSWORD': 'BIxaQgb3JpIHziCCHQDa',
-        'HOST': 'containers-us-west-99.railway.app',
-        'PORT': '5925',
+        'PASSWORD': 'tjDxkcscwTkieHPrrWwEpltStcSzCILZ',
+        'HOST': 'shinkansen.proxy.rlwy.net',
+        'PORT': '40193',
     }
 }
 
@@ -192,7 +192,11 @@ STATICFILES_DIRS = [
 MEDIA_ROOT = BASE_DIR / 'static/images'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# 🚨 Esto permite todos los orígenes CORS
 CORS_ALLOW_ALL_ORIGINS = True
+
+# ✅ Si usas cookies (autenticación por sesión), activa esto también
+CORS_ALLOW_CREDENTIALS = True
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
