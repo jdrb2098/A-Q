@@ -18,6 +18,7 @@ admin.site.register(Category)
 admin.site.register(SubCategory)
 admin.site.register(Document)
 admin.site.register(MeasurementUnits)
+admin.site.register(Warehouse)
 
 
 

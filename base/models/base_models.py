@@ -17,12 +17,18 @@ class Category(models.Model):
     reference_code = models.CharField(max_length=3)
     name = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.name
+
 
 class SubCategory(models.Model):
     subcategory_id = models.AutoField(primary_key=True, editable=False)
     reference_code = models.CharField(max_length=3)
     name = models.CharField(max_length=255)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.name} ({self.category.name})"
 
 
 class MeasurementUnits(models.Model):
