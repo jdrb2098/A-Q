@@ -53,7 +53,6 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     reference_code = models.CharField(max_length=10, editable=True, null=True, blank=True)  #Solo se pueden agregar 4 caraccteres
     measurement_unit = models.ForeignKey(MeasurementUnits, on_delete=models.CASCADE, blank=True, null=True)
-    is_good = models.BooleanField(default=False)
     is_service = models.BooleanField(default=False)
 
     category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True)
